@@ -10,8 +10,23 @@ use \SoapClient;
 class ServiceApiController extends Controller
 {
 
+    public $baseUrl;
+    public  $clientRest;
 
-  public function GetProductGet(){
+    public function __construct(){
+        $this->baseUrl = env('API_ENDPOINT');
+        $this->clientRest =new Client(
+            ['base_uri' => $this->baseUrl ,
+                'auth' => ['ck_6430e3183b00f310c55cbd480c7f88107a128003', 'cs_80387c7dba778dbaa799e47e8ec7aecdd75d872f']
+            ]);
+    }
+
+    public function  Get($url_api){
+        $res = $this->clientRest->get($url_api);
+        $result = $res->getBody()->getContents();
+        return json_decode($result,TRUE);
+    }
+  public function GetProducts(){
 
       $baseUrl = env('API_ENDPOINT');
       $client = new Client(

@@ -21,4 +21,4 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/', 'ServiceApiController@GetProduct')->name('products');
+ Route::get('/', 'ProductoController@ObtenerProductosWoo')->name('products');
