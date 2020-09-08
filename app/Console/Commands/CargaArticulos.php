@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use \SoapClient;
+use  App\Http\Controllers;
 
 class CargaArticulos extends Command
 {
@@ -28,9 +29,11 @@ class CargaArticulos extends Command
      *
      * @return void
      */
-    public function __construct()
+    public $pcontroller;
+    public function __construct( ProductoController  $controllerProducto)
     {
         parent::__construct();
+        $this->pcontroller = $controllerProducto;
     }
 
     /**
@@ -40,12 +43,14 @@ class CargaArticulos extends Command
      */
     public function handle()
     {
-        $url = 'http://pyaws.pya.com.co/ServiceSagWeb.svc?singleWsdl';
-        $client  =  new SoapClient($url);
-        $result = $client->consultaSagJson(['a_s_token'=>'L44rEt98Hj09','a_s_consulta'=>'select * from articulos where sc_tienda_virtual = \'S\'']);
-        dd($result);
-        //dd($client->__getTypes());
+       // $url = 'http://pyaws.pya.com.co/ServiceSagWeb.svc?singleWsdl';
+      //  $client  =  new SoapClient($url);
+      //  $result = $client->consultaSagJson(['a_s_token'=>'L44rEt98Hj09','a_s_consulta'=>'select * from articulos where sc_tienda_virtual = \'S\'']);
+       // dd($result);
 
-        $this->info('Los articulos se cargaron con exito');
+        $this->pcontroller.CrearProductosWoo();
+
+
+        $this->info('Sec creo un producto con exito');
     }
 }

@@ -25,7 +25,7 @@ class ProductoController extends Controller
 
     public function CrearProductosWoo(){
         $formaParams = [
-            'name' => 'Cemento x 50kg',
+            'name' => 'Cemento x 90kg',
             'type' => 'simple',
             'regular_price' => '99.50',
             'description' => 'cemento argos',
