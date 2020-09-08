@@ -26,7 +26,13 @@ class ServiceApiController extends Controller
         $result = $res->getBody()->getContents();
         return json_decode($result,TRUE);
     }
-  public function GetProducts(){
+
+    public function Post($url_api,$arrayFormParams){
+        $response =  $this->clientRest->post($url_api,['form_params' =>$arrayFormParams]);
+        $result = $response->getBody()->getContents();
+        return json_decode($result,TRUE);
+    }
+  /**public function GetProducts(){
 
       $baseUrl = env('API_ENDPOINT');
       $client = new Client(
@@ -37,10 +43,10 @@ class ServiceApiController extends Controller
       $result = $res->getBody()->getContents();
       $arr = json_decode($result,TRUE);
       dd($arr);
-  }
+  }**/
 
 
-    public function GetProductPpost(){
+    /**public function Post(){
 
         $baseUrl = env('API_ENDPOINT');
         $client = new Client(
@@ -69,7 +75,7 @@ class ServiceApiController extends Controller
                 ]
             ]
         ]);
-    }
+    }**/
 
 
 

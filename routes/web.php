@@ -22,3 +22,4 @@ use Illuminate\Support\Facades\Route;
 
 
  Route::get('/', 'ProductoController@ObtenerProductosWoo')->name('products');
+ Route::get('/createProduct', 'ProductoController@CrearProductosWoo')->name('createProduct');
