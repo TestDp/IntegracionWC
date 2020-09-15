@@ -9,43 +9,34 @@
 namespace App\Http\Controllers;
 
 
+use App\Integracion\Negocio\Logica\Producto\ProductoServicio;
+
 class ProductoController extends Controller
 {
 
-    public $servicio;
+    public $productoServicio;
 
-    public function __construct(ServiceApiController $serviceApiController){
-        $this->servicio = $serviceApiController;
+    public function __construct(ProductoServicio $productoServicio){
+        $this->productoServicio = $productoServicio;
     }
 
-    public  function  ObtenerProductosWoo(){
-       $result =  $this->servicio->Get('/wp-json/wc/v3/products');
+    public  function  ConsultarProductosWoo(){
+      $result =  $this->productoServicio->ConsultarProductosWoo();
         dd($result);
     }
 
     public function CrearProductosWoo(){
-        $formaParams = [
-            'name' => 'Cemento x 90kg',
-            'type' => 'simple',
-            'regular_price' => '99.50',
-            'description' => 'cemento argos',
-            'short_description' => 'nuevo',
-            'categories' => [
-                [
-                    'id' => 15
-                ]
-            ],
-            'images' => [
-                [
-                    'src' => 'http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg'
-                ],
-                [
-                    'src' => 'http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg'
-                ]
-            ]
-        ];
-        $result =  $this->servicio->Post('/wp-json/wc/v3/products',$formaParams);
+        $result =  $this->productoServicio->CrearProductoWoo();
         dd($result);
     }
 
+    public function ConsultarProductosSAG(){
+        $result =  $this->productoServicio->ConsultarProductosSAG();
+        dd($result);
+    }
+
+    public function ActualizarProductosWoo(){
+        $result =  $this->productoServicio->ActualizarProductosWoo();
+        dd($result);
+    }
 }

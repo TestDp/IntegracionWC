@@ -20,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 
 
 
+//RUTAS WOOCOMERCE
+Route::get('/', 'ProductoController@ConsultarProductosWoo')->name('products');
+Route::get('/createProduct', 'ProductoController@CrearProductosWoo')->name('createProduct');
+Route::get('/updateProducts', 'ProductoController@ActualizarProductosWoo')->name('updateProducts');
 
- Route::get('/', 'ProductoController@ObtenerProductosWoo')->name('products');
- Route::get('/createProduct', 'ProductoController@CrearProductosWoo')->name('createProduct');
+//RUTAS SAG
+Route::get('/getProducts', 'ProductoController@ConsultarProductosSAG')->name('getProducts');
+
