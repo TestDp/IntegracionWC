@@ -40,9 +40,9 @@ class ProductoServicio
             'name' => 'BROCHAS X2',//sc_detalle_articulo
             'type' => 'simple',
             'regular_price' => '99.50',//Precio 1
-            'description' => 'cemento argos',//obs_articulo..VALIDAR CAMPO
-            'short_description' => 'nuevo',//obs_articulo..VALIDAR CAMPO
-            "sku" => "999",//ka_nl_articulo
+            'description' => 'cemento argos',//sv_obs_articulo
+            'short_description' => 'nuevo',//sv_obs_articulo
+            "sku" => "999",//k_sc_codigo_articulo
             'categories' => [
                 [
                     'id' => 15//ka_ni_grupo
@@ -51,6 +51,7 @@ class ProductoServicio
             'images' => [
                 [
                     'src' => 'http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg'
+                    // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
                     //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
                 ]
             ]
