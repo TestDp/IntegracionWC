@@ -9,8 +9,8 @@
 namespace App\Integracion\Negocio\Logica\Producto;
 
 
-use App\Integracion\Servicios\Rest\Woocommerce\ClienteServicioWoo;
-use App\Integracion\Servicios\Soap\Sag\ClienteServicioSag;
+use App\Integracion\Servicios\Rest\Woocommerce\ServiceClientWoo;
+use App\Integracion\Servicios\Soap\Sag\ServiceClientSag;
 
 class ProductoServicio
 {
@@ -18,7 +18,7 @@ class ProductoServicio
     public $clienteServicioWoo;
     public $clienteServicioSag;
 
-    public function __construct(ClienteServicioWoo $clienteServicioWoo,ClienteServicioSag $clienteServicioSag){
+    public function __construct(ServiceClientWoo $clienteServicioWoo, ServiceClientSag $clienteServicioSag){
         $this->clienteServicioWoo = $clienteServicioWoo;
         $this->clienteServicioSag = $clienteServicioSag;
     }

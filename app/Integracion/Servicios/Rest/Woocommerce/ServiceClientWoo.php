@@ -11,7 +11,7 @@ namespace App\Integracion\Servicios\Rest\Woocommerce;
 
 use GuzzleHttp\Client;
 
-class ClienteServicioWoo
+class ServiceClientWoo
 {
     private $baseUrl;
     private $clientRest;

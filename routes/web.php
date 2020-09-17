@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'ProductoController@ConsultarProductosWoo')->name('products');
 Route::get('/createProduct', 'ProductoController@CrearProductosWoo')->name('createProduct');
 Route::get('/updateProducts', 'ProductoController@ActualizarProductosWoo')->name('updateProducts');
+Route::get('/getOrders', 'OrdenController@ConsultarOrdenesWoo')->name('getOrders');
 
 //RUTAS SAG
 Route::get('/getProducts', 'ProductoController@ConsultarProductosSAG')->name('getProducts');

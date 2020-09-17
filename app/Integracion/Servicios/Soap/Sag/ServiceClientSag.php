@@ -11,7 +11,7 @@ namespace App\Integracion\Servicios\Soap\Sag;
 
 use SoapClient;
 
-class ClienteServicioSag
+class ServiceClientSag
 {
     private $clientSoap;
     private $baseUrlSag;
