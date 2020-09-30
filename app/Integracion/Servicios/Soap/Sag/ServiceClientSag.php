@@ -27,4 +27,9 @@ class ServiceClientSag
         $result = $this->clientSoap->consultaSagJson(['a_s_token'=> $this->tokenSag ,'a_s_consulta' => $query]);
         return json_decode($result->consultaSagJsonResult);
     }
+
+    public function GuardarClientesSag($xml){
+        $result = $this->clientSoap->insercionSag(['a_s_token'=> $this->tokenSag ,'a_s_tipo' => 1, 'a_s_xml' => $xml]);
+        return json_decode($result->consultaSagJsonResult);
+    }
 }

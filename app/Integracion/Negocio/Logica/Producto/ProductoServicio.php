@@ -63,7 +63,7 @@ class ProductoServicio
 
     public function ConsultarProductosSAG(){
         $result = $this->clienteServicioSag ->
-                    GetConsultaSagJson('select * from articulos where sc_tienda_virtual = "S"');
+                    GetConsultaSagJson("select * from articulos where sc_tienda_virtual = 'S'");
         return $result;
     }
 
