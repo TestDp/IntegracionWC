@@ -24,4 +24,8 @@ class OrdenController extends Controller
         $result =  $this->ordenServicio->ConsultarOrdenesWoo();
         dd($result);
     }
+    public function ConsultarOrdenWoo(){
+        $result =  $this->ordenServicio->ConsultarOrdenWoo(2842);
+        dd($result);
+    }
 }

@@ -27,4 +27,9 @@ class OrdenServicio
         $result =  $this->serviceClientWoo->Get('/wp-json/wc/v3/orders');
         return $result;
     }
+
+    public function  ConsultarOrdenWoo($idOrdenWoo){
+        $result =  $this->serviceClientWoo->Get('/wp-json/wc/v3/orders/'.$idOrdenWoo);
+        return $result;
+    }
 }

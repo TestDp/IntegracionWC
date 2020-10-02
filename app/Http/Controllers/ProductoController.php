@@ -20,13 +20,25 @@ class ProductoController extends Controller
         $this->productoServicio = $productoServicio;
     }
 
+    public function CargaInicialWoo(){
+        $this->productoServicio->CargaInicialWoo();
+    }
     public  function  ConsultarProductosWoo(){
-      $result =  $this->productoServicio->ConsultarProductosWoo();
+      $result =  $this->productoServicio->ConsultarProductosWoo(100);
         dd($result);
     }
 
     public function CrearProductosWoo(){
         $result =  $this->productoServicio->CrearProductoWoo();
+        dd($result);
+    }
+    public function ActualizarProductosWoo(){
+        $result =  $this->productoServicio->ActualizarProductosWoo();
+        dd($result);
+    }
+
+    public  function  ActualizarInventarioProductosWoo(){
+        $result =  $this->productoServicio->ActualizarInventarioProductosWoo();
         dd($result);
     }
 
@@ -35,8 +47,5 @@ class ProductoController extends Controller
         dd($result);
     }
 
-    public function ActualizarProductosWoo(){
-        $result =  $this->productoServicio->ActualizarProductosWoo();
-        dd($result);
-    }
+
 }

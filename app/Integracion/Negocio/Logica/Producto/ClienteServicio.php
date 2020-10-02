@@ -24,28 +24,32 @@ class ClienteServicio
     }
 
     public  function  ConsultarClientesWoo(){
-        $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/customers/2');
+       $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/customers');
         return $result;
     }
 
-    public function GuardarClientesSAG(){
-
-        $xml = $this->CrearXMLSag();
-        $result = $this->clienteServicioSag ->GuardarClientesSag($xml);
+    public  function  ConsultarClienteWoo($idClienteWoo){
+        $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/customers/'.$idClienteWoo);
         return $result;
     }
 
 
-    public  function CrearXMLSag(){
+    public function GuardarClientesSAG($xmlClienteSag){
+        $result = $this->clienteServicioSag ->GuardarClientesSag($xmlClienteSag);
+        return $result;
+    }
+
+
+    public function CrearXMLClienteSag($clienteWoo){
 
         $doc = new  DOMDocument ();
 
-        //$doc -> formatOutput = true ;
+        $doc -> formatOutput = true ;
 
-        $raiz = $doc -> createElement ( "CLIENTES" );
+        $raiz = $doc -> createElement ( "clientes" );
         $raiz = $doc -> appendChild ( $raiz );
 
-        $cliente = $doc -> createElement ( "CLIENTE" );
+        $cliente = $doc -> createElement ( "cliente" );
         $cliente = $raiz -> appendChild ( $cliente );
 
         $actividadComercial = $doc -> createElement ( "actividadComercial" );
@@ -55,7 +59,7 @@ class ClienteServicio
 
         $codigoDaneCiudad = $doc -> createElement ( "codigoDaneCiudad" );
         $codigoDaneCiudad = $cliente -> appendChild ( $codigoDaneCiudad );
-        $textcodigoDaneCiudad = $doc -> createTextNode ( "000000" );
+        $textcodigoDaneCiudad = $doc -> createTextNode ( "05440" );
         $textcodigoDaneCiudad = $codigoDaneCiudad -> appendChild ( $textcodigoDaneCiudad );
 
         $naturaleza = $doc -> createElement ( "naturaleza" );
@@ -76,7 +80,7 @@ class ClienteServicio
 
         $nombre = $doc -> createElement ( "nombre" );
         $nombre = $cliente -> appendChild ( $nombre );
-        $textnombre = $doc -> createTextNode ( "Diego" );
+        $textnombre = $doc -> createTextNode ( $clienteWoo->first_name .$clienteWoo->last_name );
         $textnombre = $nombre -> appendChild ( $textnombre );
 
         $direccion = $doc -> createElement ( "direccion" );
@@ -97,7 +101,7 @@ class ClienteServicio
 
         $email = $doc -> createElement ( "email" );
         $email = $cliente -> appendChild ( $email );
-        $textEmail = $doc -> createTextNode ( "juancamilo.blandon@gmail.com" );
+        $textEmail = $doc -> createTextNode ( $clienteWoo->email );
         $textEmail = $email -> appendChild ( $textEmail );
 
         //siempre es N
@@ -145,7 +149,7 @@ class ClienteServicio
         //siempre es MINORISTA por ser persona natural
         $tipoCliente = $doc -> createElement ( "tipoCliente" );
         $tipoCliente = $cliente -> appendChild ( $tipoCliente );
-        $texttipoCliente = $doc -> createTextNode ( "MINORISTA" );
+        $texttipoCliente = $doc -> createTextNode ( "PARTICULARES" );
         $texttipoCliente = $tipoCliente -> appendChild ( $texttipoCliente );
 
         //siempre es 0 numeric
@@ -200,8 +204,8 @@ class ClienteServicio
         $textNombre1 = $doc -> createTextNode ( "Juan" );
         $textNombre1 = $Nombre1 -> appendChild ( $textNombre1 );
 
-        return $doc;
-        //echo $doc->saveXML();
+
+       return  $doc->saveXML();
 
 
 

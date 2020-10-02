@@ -21,15 +21,19 @@ use Illuminate\Support\Facades\Route;
 
 
 //RUTAS WOOCOMERCE
+Route::get('/iniCharge', 'ProductoController@CargaInicialWoo')->name('iniCharge');
 Route::get('/', 'ProductoController@ConsultarProductosWoo')->name('products');
 Route::get('/createProduct', 'ProductoController@CrearProductosWoo')->name('createProduct');
 Route::get('/updateProducts', 'ProductoController@ActualizarProductosWoo')->name('updateProducts');
 Route::get('/getOrders', 'OrdenController@ConsultarOrdenesWoo')->name('getOrders');
+Route::get('/getOrder', 'OrdenController@ConsultarOrdenWoo')->name('getOrder');
+Route::get('/updateStock', 'ProductoController@ActualizarInventarioProductosWoo')->name('updateStock');
 Route::get('/customers', 'ClienteController@ConsultarClientesWoo')->name('customers');
+Route::get('/customer', 'ClienteController@ConsultarClienteWoo')->name('customer');
 Route::get('/generarXML', 'ClienteController@CrearXMLSag')->name('generarXML');
 
 
 //RUTAS SAG
 Route::get('/getProducts', 'ProductoController@ConsultarProductosSAG')->name('getProducts');
-Route::get('/saveCustomer', 'ClienteController@GuardarClientesSAG')->name('saveCustomer');
+Route::get('/saveCustomer', 'ClienteController@CrearClienteSagDesdeWoo')->name('saveCustomer');
 

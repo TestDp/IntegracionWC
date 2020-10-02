@@ -23,34 +23,67 @@ class ProductoServicio
         $this->clienteServicioSag = $clienteServicioSag;
     }
 
-    public  function  ConsultarProductosWoo(){
-        $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/products');
+    public function CargaInicialWoo(){
+        $result  = $this->ConsultarProductosSAG();
+        foreach ($result as $productoSag){
+            $this->CrearProductoWoo($productoSag);
+        }
+    }
+
+    public  function  ConsultarProductosWoo($cantResgiXpagina){
+        $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/products?per_page='.$cantResgiXpagina);
         return $result;
     }
+
 
     public  function  ActualizarProductosWoo(){
-        $formParams = ['stock_quantity' => '165'];
-        $result = $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/588',$formParams);
-        return $result;
+        $listProductosSag  = $this->ConsultarProductosSAG();
+        $listProductosWoo = collect($this->ConsultarProductosWoo());
+        foreach ($listProductosSag as $productoSag){
+          $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
+          if(is_null($productoWoo)){
+              $this->CrearProductoWoo($productoSag);
+          }
+        }
+        return "success";
     }
 
-    public  function CrearProductoWoo(){
+    public  function  ActualizarInventarioProductosWoo(){
+        $result  = $this->ConsultarInventarioProductosSAG();
+        $listProductosWoo = collect($this->ConsultarProductosWoo());
+        foreach ($result as $productoSag){
+            $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
+            $formParams = ['stock_quantity' => $productoSag->n_saldo_actual];
+            $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/'.$productoWoo['id'],$formParams);
+        }
+
+        return $result;
+
+    }
+    public  function CrearProductoWoo($productoSag){
+        $rutaImagen = $productoSag->ss_direccion_logo;
+        $nomreImagen = 'no-img.png';
+        if($rutaImagen != null  && $rutaImagen !="")
+        {
+            $partesRuta= collect(explode("\\",$rutaImagen));
+            $nomreImagen = $partesRuta->last();
+        }
         $formaParams = [
-           // "id" => 700,
-            'name' => 'BROCHAS X2',//sc_detalle_articulo
+            'name' => $productoSag->sc_detalle_articulo,
             'type' => 'simple',
-            'regular_price' => '99.50',//Precio 1
-            'description' => 'cemento argos',//sv_obs_articulo
-            'short_description' => 'nuevo',//sv_obs_articulo
-            "sku" => "999",//k_sc_codigo_articulo
+            'regular_price' => $productoSag->n_valor_venta_normal,
+            'description' => $productoSag->sv_obs_articulo,
+            'short_description' => $productoSag->sv_obs_articulo,
+            "sku" => $productoSag->k_sc_codigo_articulo,
+            'manage_stock' => true,
             'categories' => [
                 [
-                    'id' => 15//ka_ni_grupo
+                    'id'=> $productoSag->ka_ni_grupo
                 ]
             ],
             'images' => [
                 [
-                    'src' => 'http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg'
+                    'src' => env('RUTAIMAGENES').$nomreImagen
                     // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
                     //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
                 ]
@@ -64,6 +97,17 @@ class ProductoServicio
     public function ConsultarProductosSAG(){
         $result = $this->clienteServicioSag ->
                     GetConsultaSagJson("select * from articulos where sc_tienda_virtual = 'S'");
+        return $result;
+    }
+
+    public function ConsultarInventarioProductosSAG(){
+        $result = $this->clienteServicioSag ->
+        GetConsultaSagJson("select a.k_sc_codigo_articulo,s.* from saldos_articulos as s WITH(NOLOCK)
+                                     inner join bodegas as b
+                                     on s.ka_nl_bodega = b.ka_nl_bodega
+                                     inner join articulos as a
+                                     on s.ka_nl_articulo = a.ka_nl_articulo
+                                     where b.ka_nl_bodega = 67 and k_sc_periodo = 202009");
         return $result;
     }
 
