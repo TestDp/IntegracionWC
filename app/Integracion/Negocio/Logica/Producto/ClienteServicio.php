@@ -75,7 +75,7 @@ class ClienteServicio
 
         $documento = $doc -> createElement ( "documento" );
         $documento = $cliente -> appendChild ( $documento );
-        $textdocumento = $doc -> createTextNode ( 1036933852 );
+        $textdocumento = $doc -> createTextNode ( $clienteWoo->company);
         $textdocumento = $documento -> appendChild ( $textdocumento );
 
         $nombre = $doc -> createElement ( "nombre" );
@@ -85,7 +85,7 @@ class ClienteServicio
 
         $direccion = $doc -> createElement ( "direccion" );
         $direccion = $cliente -> appendChild ( $direccion );
-        $textdireccion = $doc -> createTextNode ( "DIagonal 50c 43 103" );
+        $textdireccion = $doc -> createTextNode ( $clienteWoo->address_1 );
         $textdireccion = $direccion -> appendChild ( $textdireccion );
 
         //siempre es "N" persona natural
@@ -96,7 +96,7 @@ class ClienteServicio
 
         $telefonoPpal = $doc -> createElement ( "telefonoPpal" );
         $telefonoPpal = $cliente -> appendChild ( $telefonoPpal );
-        $texttelefonoPpal = $doc -> createTextNode ( "3128426549" );
+        $texttelefonoPpal = $doc -> createTextNode ( $clienteWoo->phone );
         $texttelefonoPpal = $telefonoPpal -> appendChild ( $texttelefonoPpal );
 
         $email = $doc -> createElement ( "email" );
@@ -185,23 +185,18 @@ class ClienteServicio
         //siempre es 999999999 numerico
         $cupoMaximo = $doc -> createElement ( "cupoMaximo" );
         $cupoMaximo = $cliente -> appendChild ( $cupoMaximo );
-        $textcupoMaximo = $doc -> createTextNode ( 999999999 );
+        $textcupoMaximo = $doc -> createTextNode ( 99999999999 );
         $textcupoMaximo = $cupoMaximo -> appendChild ( $textcupoMaximo );
 
         $Apellido1 = $doc -> createElement ( "Apellido1" );
         $Apellido1 = $cliente -> appendChild ( $Apellido1 );
-        $textApellido1 = $doc -> createTextNode ( "Blandon" );
+        $textApellido1 = $doc -> createTextNode ( $clienteWoo->last_name );
         $textApellido1 = $Apellido1 -> appendChild ( $textApellido1 );
 
 
-        $Apellido2 = $doc -> createElement ( "Apellido2" );
-        $Apellido2 = $cliente -> appendChild ( $Apellido2 );
-        $textApellido2 = $doc -> createTextNode ( "Urrea" );
-        $textApellido2 = $Apellido2 -> appendChild ( $textApellido2 );
-
         $Nombre1 = $doc -> createElement ( "Nombre1" );
         $Nombre1 = $cliente -> appendChild ( $Nombre1 );
-        $textNombre1 = $doc -> createTextNode ( "Juan" );
+        $textNombre1 = $doc -> createTextNode ( $clienteWoo->first_name );
         $textNombre1 = $Nombre1 -> appendChild ( $textNombre1 );
 
 
