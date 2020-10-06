@@ -32,4 +32,11 @@ class ServiceClientSag
         $result = $this->clientSoap->insercionSag(['a_s_token'=> $this->tokenSag ,'a_s_tipo' => 1, 'a_s_xml' => $xml]);
         return $result->insercionSagResult->clsGenerales;
     }
+
+    public function GuardarOrdenSAG($xml){
+        $result = $this->clientSoap->insercionSag(['a_s_token'=> $this->tokenSag ,'a_s_tipo' => 2, 'a_s_xml' => $xml]);
+        return $result->insercionSagResult->clsGenerales;
+    }
+
+
 }

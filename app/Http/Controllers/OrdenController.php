@@ -28,4 +28,13 @@ class OrdenController extends Controller
         $result =  $this->ordenServicio->ConsultarOrdenWoo(2842);
         dd($result);
     }
+
+    public function CrearOrdenSagDesdeWoo(){
+        //$ordenWoo = (object)  $this->clienteServicio->ConsultarOrdenWoo(2842);
+        //$test = $clienteWoo->first_name ;
+        //$xmlOrdenSag = $this->clienteServicio->CrearXMLOrdenSag($ordenWoo);
+        $xmlOrdenSag = $this->clienteServicio->CrearXMLOrdenSag();
+        $result = $this->clienteServicio->GuardarOrdenSAG($xmlOrdenSag);
+        dd($result);
+    }
 }

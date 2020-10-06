@@ -34,6 +34,11 @@ class OrdenServicio
         return $result;
     }
 
+    public function GuardarOrdenSAG($xmlOrdenSag){
+        $result = $this->clienteServicioSag ->GuardarClientesSag($xmlOrdenSag);
+        return $result;
+    }
+
     public function CrearXMLOrdenSag(){
 
         $doc = new  DOMDocument ();
