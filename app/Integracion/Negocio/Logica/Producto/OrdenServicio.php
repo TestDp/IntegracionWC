@@ -35,7 +35,7 @@ class OrdenServicio
     }
 
     public function GuardarOrdenSAG($xmlOrdenSag){
-        $result = $this->clienteServicioSag ->GuardarClientesSag($xmlOrdenSag);
+        $result = $this->serviceClientSag->GuardarOrdenSAG($xmlOrdenSag);
         return $result;
     }
 
@@ -45,11 +45,30 @@ class OrdenServicio
 
         $doc -> formatOutput = true ;
 
-        $raiz = $doc -> createElement ( "movimientos" );
+        $raiz = $doc -> createElement ( "Movimientos" );
         $raiz = $doc -> appendChild ( $raiz );
 
         $movimiento = $doc -> createElement ( "movimiento" );
         $movimiento = $raiz -> appendChild ( $movimiento );
+
+
+        // nro interno woo numerico
+        $movimientoId = $doc -> createElement ( "movimientoId" );
+        $movimientoId = $movimiento -> appendChild ( $movimientoId );
+        $textmovimientoId = $doc -> createTextNode ( 1 );
+        $textmovimientoId = $movimientoId -> appendChild ( $textmovimientoId );
+
+        //fecha woo formato 2020/04/30
+        $fecha = $doc -> createElement ( "fecha" );
+        $fecha = $movimiento -> appendChild ( $fecha );
+        $textfecha = $doc -> createTextNode ( "2020/04/30" );
+        $textfecha = $fecha -> appendChild ( $textfecha );
+
+        //quemado
+        $n_numero_documento = $doc -> createElement ( "n_numero_documento" );
+        $n_numero_documento = $movimiento -> appendChild ( $n_numero_documento );
+        $textn_numero_documento = $doc -> createTextNode ( 0 );
+        $textn_numero_documento = $n_numero_documento -> appendChild ( $textn_numero_documento );
 
 
         //quemado como CT . COtizacion o PC : PEDIDOS CLIENTES
@@ -61,26 +80,9 @@ class OrdenServicio
         //cedula de cliente
         $nit = $doc -> createElement ( "nit" );
         $nit = $movimiento -> appendChild ( $nit );
-        $textnit = $doc -> createTextNode ( "CT" );
+        $textnit = $doc -> createTextNode ( 1036933852 );
         $textnit = $nit -> appendChild ( $textnit );
 
-        //quemado
-        $n_numero_ciudadEntrega = $doc -> createElement ( "n_numero_ciudadEntrega" );
-        $n_numero_ciudadEntrega = $movimiento -> appendChild ( $n_numero_ciudadEntrega );
-        $textn_numero_ciudadEntrega = $doc -> createTextNode ( 0 );
-        $textn_numero_ciudadEntrega = $n_numero_ciudadEntrega -> appendChild ( $textn_numero_ciudadEntrega );
-
-        // nro interno woo numerico
-        $movimientoId = $doc -> createElement ( "movimientoId" );
-        $movimientoId = $movimiento -> appendChild ( $movimientoId );
-        $textmovimientoId = $doc -> createTextNode ( 213012 );
-        $textmovimientoId = $movimientoId -> appendChild ( $textmovimientoId );
-
-        //fecha woo formato 2020/04/30
-        $fecha = $doc -> createElement ( "fecha" );
-        $fecha = $movimiento -> appendChild ( $fecha );
-        $textfecha = $doc -> createTextNode ( "2020/04/30" );
-        $textfecha = $fecha -> appendChild ( $textfecha );
 
         // ciudad entrega woo, no obligatoria
         $ciudadEntrega = $doc -> createElement ( "ciudadEntrega" );
@@ -89,7 +91,7 @@ class OrdenServicio
         $textciudadEntrega = $ciudadEntrega -> appendChild ( $textciudadEntrega );
 
         //direccion entrega , no obligatoria
-        $dieccionEntrega = $doc -> createElement ( "dieccionEntrega" );
+        $dieccionEntrega = $doc -> createElement ( "direccionEntrega" );
         $dieccionEntrega = $movimiento -> appendChild ( $dieccionEntrega );
         $textdieccionEntrega = $doc -> createTextNode ( "Calle 25 # 12-29" );
         $textdieccionEntrega = $dieccionEntrega -> appendChild ( $textdieccionEntrega );
@@ -127,13 +129,13 @@ class OrdenServicio
         //es el mismo numero interno woo
         $movimientoId = $doc -> createElement ( "movimientoId" );
         $movimientoId = $movimientoDetalle -> appendChild ( $movimientoId );
-        $textmovimientoId = $doc -> createTextNode ( 213012 );
+        $textmovimientoId = $doc -> createTextNode ( 1 );
         $textmovimientoId = $movimientoId -> appendChild ( $textmovimientoId );
 
         //es el concecutivo del item idicado por el ciclo
         $movimientoDetalleId = $doc -> createElement ( "movimientoDetalleId" );
         $movimientoDetalleId = $movimientoDetalle -> appendChild ( $movimientoDetalleId );
-        $textmovimientoDetalleId = $doc -> createTextNode ( 213012 );
+        $textmovimientoDetalleId = $doc -> createTextNode ( 1 );
         $textmovimientoDetalleId = $movimientoDetalleId -> appendChild ( $textmovimientoDetalleId );
 
         // quemado
@@ -145,7 +147,7 @@ class OrdenServicio
         // equvalorUnitariolente al sku de woo
         $codigoArticulo = $doc -> createElement ( "codigoArticulo" );
         $codigoArticulo = $movimientoDetalle -> appendChild ( $codigoArticulo );
-        $textcodigoArticulo = $doc -> createTextNode ( "2002" );
+        $textcodigoArticulo = $doc -> createTextNode ( "1300160" );
         $textcodigoArticulo = $codigoArticulo -> appendChild ( $textcodigoArticulo );
 
         // cantidad woo
@@ -189,6 +191,10 @@ class OrdenServicio
         $bodega = $movimientoDetalle -> appendChild ( $bodega );
         $textbodega = $doc -> createTextNode ( "67" );
         $textbodega = $bodega -> appendChild ( $textbodega );
+
+
+
+
 
 
 
