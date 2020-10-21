@@ -48,14 +48,45 @@ class OrdenServicio
         $raiz = $doc -> createElement ( "Movimientos" );
         $raiz = $doc -> appendChild ( $raiz );
 
+
         $movimiento = $doc -> createElement ( "movimiento" );
         $movimiento = $raiz -> appendChild ( $movimiento );
+        $movimiento->setAttribute("movimientoId", "1");
+        $movimiento->setAttribute("n_numero_documento", "0");
+        $movimiento->setAttribute("num_doc", "606");
+        $movimiento->setAttribute("fuente", "OC");
+        $movimiento->setAttribute("nit", "1036933852");
+        $movimiento->setAttribute("fecha", "2020-10-09");
+        $movimiento->setAttribute("d_fecha_documento", "2020-10-09");
+        $movimiento->setAttribute("vendedor","1038408871");
+        $movimiento->setAttribute("usuario", "SANDRA");
+        $movimiento->setAttribute("RealizarCommit", "S");
 
 
+        $movimientoDetalle = $doc -> createElement ( "movimientoDetalle" );
+
+        $movimientoDetalle = $movimiento -> appendChild ( $movimientoDetalle );
+        $movimientoDetalle->setAttribute("movimientoDetalleId", "1");
+        $movimientoDetalle->setAttribute("movimientoId", "1");
+        $movimientoDetalle->setAttribute("sc_cual_precio", "1");
+        $movimientoDetalle->setAttribute("codigoArticulo", "1300160");
+        $movimientoDetalle->setAttribute("cantidad", "9");
+        $movimientoDetalle->setAttribute("valorUnitario", "15000");
+        $movimientoDetalle->setAttribute("iva", "19");
+        $movimientoDetalle->setAttribute("descuento", "0");
+        $movimientoDetalle->setAttribute("descuento2", "0");
+        $movimientoDetalle->setAttribute("bodega", "63");
+
+        $movimientosOtrosDatos= $doc -> createElement ( "movimientosOtrosDatos" );
+
+        $movimientosOtrosDatos = $movimiento -> appendChild ( $movimientosOtrosDatos );
+        $movimientosOtrosDatos->setAttribute("movimientoId", "1");
+
+/*
         // nro interno woo numerico
         $movimientoId = $doc -> createElement ( "movimientoId" );
         $movimientoId = $movimiento -> appendChild ( $movimientoId );
-        $textmovimientoId = $doc -> createTextNode ( 1 );
+        $textmovimientoId = $doc -> createTextNode ( 4 );
         $textmovimientoId = $movimientoId -> appendChild ( $textmovimientoId );
 
         //fecha woo formato 2020/04/30
@@ -129,7 +160,7 @@ class OrdenServicio
         //es el mismo numero interno woo
         $movimientoId = $doc -> createElement ( "movimientoId" );
         $movimientoId = $movimientoDetalle -> appendChild ( $movimientoId );
-        $textmovimientoId = $doc -> createTextNode ( 1 );
+        $textmovimientoId = $doc -> createTextNode ( 4 );
         $textmovimientoId = $movimientoId -> appendChild ( $textmovimientoId );
 
         //es el concecutivo del item idicado por el ciclo
@@ -192,7 +223,7 @@ class OrdenServicio
         $textbodega = $doc -> createTextNode ( "67" );
         $textbodega = $bodega -> appendChild ( $textbodega );
 
-
+*/
 
 
 
