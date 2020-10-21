@@ -75,7 +75,7 @@ class ClienteServicio
 
         $documento = $doc -> createElement ( "documento" );
         $documento = $cliente -> appendChild ( $documento );
-        $textdocumento = $doc -> createTextNode ( $clienteWoo->company);
+        $textdocumento = $doc -> createTextNode ( $clienteWoo->billing->company);
         $textdocumento = $documento -> appendChild ( $textdocumento );
 
         $nombre = $doc -> createElement ( "nombre" );
@@ -85,7 +85,7 @@ class ClienteServicio
 
         $direccion = $doc -> createElement ( "direccion" );
         $direccion = $cliente -> appendChild ( $direccion );
-        $textdireccion = $doc -> createTextNode ( $clienteWoo->address_1 );
+        $textdireccion = $doc -> createTextNode ( $clienteWoo->billing->address_1 );
         $textdireccion = $direccion -> appendChild ( $textdireccion );
 
         //siempre es "N" persona natural
@@ -96,7 +96,7 @@ class ClienteServicio
 
         $telefonoPpal = $doc -> createElement ( "telefonoPpal" );
         $telefonoPpal = $cliente -> appendChild ( $telefonoPpal );
-        $texttelefonoPpal = $doc -> createTextNode ( $clienteWoo->phone );
+        $texttelefonoPpal = $doc -> createTextNode ( $clienteWoo->billing->phone );
         $texttelefonoPpal = $telefonoPpal -> appendChild ( $texttelefonoPpal );
 
         $email = $doc -> createElement ( "email" );
@@ -199,13 +199,7 @@ class ClienteServicio
         $textNombre1 = $doc -> createTextNode ( $clienteWoo->first_name );
         $textNombre1 = $Nombre1 -> appendChild ( $textNombre1 );
 
-
        return  $doc->saveXML();
-
-
-
-
-        //echo  'Escrito:' . $doc -> guardar ( "/Usuarios/xcheko51x/Downloads/usuarios.xml" ). 'bytes <br> <br>' ;
 
     }
 }

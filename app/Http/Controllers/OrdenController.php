@@ -15,9 +15,11 @@ class OrdenController extends Controller
 {
 
     public $ordenServicio;
+    public $clienteController;
 
-    public function __construct(OrdenServicio $ordenServicio){
+    public function __construct(OrdenServicio $ordenServicio,ClienteController $clienteController){
         $this->ordenServicio = $ordenServicio;
+        $this->clienteController = $clienteController;
     }
 
     public function ConsultarOrdenesWoo(){
@@ -30,10 +32,9 @@ class OrdenController extends Controller
     }
 
     public function CrearOrdenSagDesdeWoo(){
-        //$ordenWoo = (object)  $this->clienteServicio->ConsultarOrdenWoo(2842);
-        //$test = $clienteWoo->first_name ;
-        //$xmlOrdenSag = $this->clienteServicio->CrearXMLOrdenSag($ordenWoo);
-        $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag();
+        $ordenWoo = (object)  $this->ordenServicio->ConsultarOrdenWoo(2845);
+        $clienteWoo = (object)$this->clienteController->CrearClienteSagDesdeWoo($ordenWoo->customer_id);
+        $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo,$clienteWoo);
         $result = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
         dd($result);
     }
