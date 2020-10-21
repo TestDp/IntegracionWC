@@ -62,6 +62,7 @@ class OrdenServicio
         $movimiento->setAttribute("usuario", "SANDRA");
         $movimiento->setAttribute("RealizarCommit", "S");
 
+        //aca iria un ciclo segun las diferentes skus de la orden
 
         $movimientoDetalle = $doc -> createElement ( "movimientoDetalle" );
 
@@ -76,6 +77,21 @@ class OrdenServicio
         $movimientoDetalle->setAttribute("descuento", "0");
         $movimientoDetalle->setAttribute("descuento2", "0");
         $movimientoDetalle->setAttribute("bodega", "63");
+
+        $movimientoDetalle1 = $doc -> createElement ( "movimientoDetalle" );
+
+        $movimientoDetalle1 = $movimiento -> appendChild ( $movimientoDetalle1 );
+        //es el concecutivo del item idicado por el ciclo
+        $movimientoDetalle1->setAttribute("movimientoDetalleId", "2");
+        $movimientoDetalle1->setAttribute("movimientoId", "1");
+        $movimientoDetalle1->setAttribute("sc_cual_precio", "1");
+        $movimientoDetalle1->setAttribute("codigoArticulo", "1300180");
+        $movimientoDetalle1->setAttribute("cantidad", "9");
+        $movimientoDetalle1->setAttribute("valorUnitario", "15000");
+        $movimientoDetalle1->setAttribute("iva", "19");
+        $movimientoDetalle1->setAttribute("descuento", "0");
+        $movimientoDetalle1->setAttribute("descuento2", "0");
+        $movimientoDetalle1->setAttribute("bodega", "63");
 
         $movimientosOtrosDatos= $doc -> createElement ( "movimientosOtrosDatos" );
 
@@ -217,7 +233,7 @@ class OrdenServicio
         $textfechaEntrega = $doc -> createTextNode ( "2020/06/15" );
         $textfechaEntrega = $fechaEntrega -> appendChild ( $textfechaEntrega );
 
-        //bodega virtual siempre sera 67
+        //bodega virtual siempre sera 63
         $bodega = $doc -> createElement ( "bodega" );
         $bodega = $movimientoDetalle -> appendChild ( $bodega );
         $textbodega = $doc -> createTextNode ( "67" );
