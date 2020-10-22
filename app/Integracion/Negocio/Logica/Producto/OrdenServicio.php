@@ -28,6 +28,10 @@ class OrdenServicio
         $result =  $this->serviceClientWoo->Get('/wp-json/wc/v3/orders');
         return $result;
     }
+    public function  ConsultarOrdenesWooByDate($fecha){
+        $result =  $this->serviceClientWoo->Get('/wp-json/wc/v3/orders?after='.$fecha);
+        return $result;
+    }
 
     public function  ConsultarOrdenWoo($idOrdenWoo){
         $result =  $this->serviceClientWoo->Get('/wp-json/wc/v3/orders/'.$idOrdenWoo);

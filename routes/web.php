@@ -37,4 +37,5 @@ Route::get('/generarXML', 'ClienteController@CrearXMLSag')->name('generarXML');
 Route::get('/getProducts', 'ProductoController@ConsultarProductosSAG')->name('getProducts');
 Route::get('/saveCustomer', 'ClienteController@CrearClienteSagDesdeWoo')->name('saveCustomer');
 Route::get('/saveOrden', 'OrdenController@CrearOrdenSagDesdeWoo')->name('saveOrden');
+Route::get('/saveOrders', 'OrdenController@CrearOrdenesSagDesdeWoo')->name('saveOrders');
 

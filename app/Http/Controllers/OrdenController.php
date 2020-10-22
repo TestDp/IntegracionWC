@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 
 use App\Integracion\Negocio\Logica\Producto\OrdenServicio;
+use DateTime;
 
 class OrdenController extends Controller
 {
@@ -31,11 +32,26 @@ class OrdenController extends Controller
         dd($result);
     }
 
-    public function CrearOrdenSagDesdeWoo(){
-        $ordenWoo = (object)  $this->ordenServicio->ConsultarOrdenWoo(2845);
+    public function CrearOrdenSagDesdeWoo($idOrdenWoo){
+        $ordenWoo = (object)  $this->ordenServicio->ConsultarOrdenWoo($idOrdenWoo);
         $clienteWoo = (object)$this->clienteController->CrearClienteSagDesdeWoo($ordenWoo->customer_id);
         $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo,$clienteWoo);
         $result = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
         dd($result);
+    }
+
+    public function CrearOrdenesSagDesdeWoo(){
+        date_default_timezone_set('America/Bogota');
+        $fechaActual = date('Y-m-d\TH:i:s');
+        $fechaConsulta = date('Y-m-d\TH:i:s',strtotime($fechaActual . "- 1 hours"));
+        $ordenesWoo =  $this->ordenServicio->ConsultarOrdenesWooByDate($fechaConsulta);
+        $resultados = array();
+        foreach ($ordenesWoo as $ordenWoo){
+            $ordenWoo = (object) $ordenWoo;
+            $clienteWoo = (object)$this->clienteController->CrearClienteSagDesdeWoo($ordenWoo->customer_id);
+            $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo,$clienteWoo);
+            $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
+        }
+        dd($resultados);
     }
 }
