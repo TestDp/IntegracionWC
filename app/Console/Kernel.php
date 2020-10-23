@@ -14,7 +14,9 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        'App\Console\Commands\CargaArticulos'
+        'App\Console\Commands\CargaArticulos',
+        'App\Console\Commands\CargaOrdenes'
+
     ];
 
     /**
@@ -26,7 +28,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->daily();
-        $schedule->command('consumo:servicios')->hourly();
+       // $schedule->command('consumo:servicios')->hourly();
+        $schedule->command('consumo:servicios')->daily();
+         $schedule->command('consumo:ordenes')->hourly();
     }
 
     /**
