@@ -32,13 +32,16 @@ class ProductoController extends Controller
         $result =  $this->productoServicio->CrearProductoWoo();
         dd($result);
     }
+    /**Carga inicial*/
     public function ActualizarProductosWoo(){
         $result =  $this->productoServicio->ActualizarProductosWoo();
         dd($result);
     }
 
     public  function  ActualizarInventarioProductosWoo(){
-        $result =  $this->productoServicio->ActualizarInventarioProductosWoo();
+        date_default_timezone_set('America/Bogota');
+        $Periodo = date('Ym');
+        $result =  $this->productoServicio->ActualizarInventarioProductosWoo($Periodo);
         dd($result);
     }
 

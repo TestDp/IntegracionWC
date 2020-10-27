@@ -48,9 +48,9 @@ class ProductoServicio
         return "success";
     }
 
-    public  function  ActualizarInventarioProductosWoo(){
-        $result  = $this->ConsultarInventarioProductosSAG();
-        $listProductosWoo = collect($this->ConsultarProductosWoo());
+    public  function  ActualizarInventarioProductosWoo($periodo){
+        $result  = $this->ConsultarInventarioProductosSAG($periodo);
+        $listProductosWoo = collect($this->ConsultarProductosWoo(100));
         foreach ($result as $productoSag){
             $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
             $formParams = ['stock_quantity' => $productoSag->n_saldo_actual];
@@ -100,14 +100,14 @@ class ProductoServicio
         return $result;
     }
 
-    public function ConsultarInventarioProductosSAG(){
+    public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
         GetConsultaSagJson("select a.k_sc_codigo_articulo,s.* from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
                                      on s.ka_nl_bodega = b.ka_nl_bodega
                                      inner join articulos as a
                                      on s.ka_nl_articulo = a.ka_nl_articulo
-                                     where b.ka_nl_bodega = 67 and k_sc_periodo = 202009");
+                                     where b.ka_nl_bodega = 67 and k_sc_periodo =".$periodo);
         return $result;
     }
 
