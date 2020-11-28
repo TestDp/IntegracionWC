@@ -38,7 +38,7 @@ class ProductoServicio
 
     public  function  ActualizarProductosWoo(){
         $listProductosSag  = $this->ConsultarProductosSAG();
-        $listProductosWoo = collect($this->ConsultarProductosWoo());
+        $listProductosWoo = collect($this->ConsultarProductosWoo(200));
         foreach ($listProductosSag as $productoSag){
           $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
           if(is_null($productoWoo)){
