@@ -46,11 +46,17 @@ class OrdenController extends Controller
         $fechaConsulta = date('Y-m-d\TH:i:s',strtotime($fechaActual . "- 1 hours"));
         $ordenesWoo =  $this->ordenServicio->ConsultarOrdenesWooByDate($fechaConsulta);
         $resultados = array();
-        foreach ($ordenesWoo as $ordenWoo){
-            $ordenWoo = (object) $ordenWoo;
+        foreach ($ordenesWoo as $ordenWoo) {
+            $ordenWoo = (object)$ordenWoo;
+            $fechas = explode("T", $ordenWoo->date_created);
             $clienteWoo = (object)$this->clienteController->CrearClienteSagDesdeWoo($ordenWoo->customer_id);
-            $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo,$clienteWoo);
+
+            //$this->ordenServicio->ValidarOrdenRepetidaSag($clienteWoo->s_identificador,$ordenWoo->id,$fechas[0]);
+            IF ($this->ordenServicio->ValidarOrdenRepetidaSag($ordenWoo->id) == null) {
+
+            $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo, $clienteWoo);
             $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
+            }
         }
         dd($resultados);
     }

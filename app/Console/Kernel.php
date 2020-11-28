@@ -29,8 +29,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->daily();
        // $schedule->command('consumo:servicios')->hourly();
-        $schedule->command('consumo:servicios')->daily();
-         $schedule->command('consumo:ordenes')->hourly();
+        $schedule->command('consumo:servicios')->dailyAt('13:00');
+        $schedule->command('consumo:ordenes')->hourly();
     }
 
     /**

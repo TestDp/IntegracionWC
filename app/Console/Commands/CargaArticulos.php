@@ -49,8 +49,10 @@ class CargaArticulos extends Command
       //  $result = $client->consultaSagJson(['a_s_token'=>'L44rEt98Hj09','a_s_consulta'=>'select * from articulos where sc_tienda_virtual = \'S\'']);
        // dd($result);
 
-        $this->pcontroller->CrearProductosWoo();
+       // $this->pcontroller->CrearProductosWoo();
+        $this->pcontroller->ActualizarProductosWoo();
         $this->pcontroller->ActualizarInventarioProductosWoo();
+
 
 
         $this->info('Sec creo un producto con exito');
