@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 
 use App\Integracion\Negocio\Logica\Producto\ProductoServicio;
+use Illuminate\Support\Facades\Log;
 
 class ProductoController extends Controller
 {
@@ -42,7 +43,9 @@ class ProductoController extends Controller
         date_default_timezone_set('America/Bogota');
         $Periodo = date('Ym');
         $result =  $this->productoServicio->ActualizarInventarioProductosWoo($Periodo);
-        dd($result);
+        Log::info('Actualizar Invetario Productos Woocommerce',array('Productos Actualizados' => $result));
+        return "proceso terminado";
+
     }
 
     public function ConsultarProductosSAG(){

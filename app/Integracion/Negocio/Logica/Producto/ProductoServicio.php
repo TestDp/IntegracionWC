@@ -11,6 +11,7 @@ namespace App\Integracion\Negocio\Logica\Producto;
 
 use App\Integracion\Servicios\Rest\Woocommerce\ServiceClientWoo;
 use App\Integracion\Servicios\Soap\Sag\ServiceClientSag;
+use phpDocumentor\Reflection\Types\Collection;
 
 class ProductoServicio
 {
@@ -30,27 +31,27 @@ class ProductoServicio
         }
     }
 
-    public  function  ConsultarProductosWoo($cantResgiXpagina){
-        $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/products?per_page='.$cantResgiXpagina);
+    public  function  ConsultarProductosWoo($cantResgiXpagina,$nroPagina){
+        $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/products?per_page='.$cantResgiXpagina.'&&page='.$nroPagina);
         return $result;
     }
 
 
     public  function  ActualizarProductosWoo(){
         $listProductosSag  = $this->ConsultarProductosSAG();
-        $listProductosWoo = collect($this->ConsultarProductosWoo(200));
+        $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         foreach ($listProductosSag as $productoSag){
-          $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
-          if(is_null($productoWoo)){
-              $this->CrearProductoWoo($productoSag);
-          }
+            $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
+            if(is_null($productoWoo)){
+                $this->CrearProductoWoo($productoSag);
+            }
         }
         return "success";
     }
 
     public  function  ActualizarInventarioProductosWoo($periodo){
         $result  = $this->ConsultarInventarioProductosSAG($periodo);
-        $listProductosWoo = collect($this->ConsultarProductosWoo(100));
+        $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         foreach ($result as $productoSag){
             $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
             $formParams = ['stock_quantity' => $productoSag->n_saldo_actual];
@@ -111,5 +112,21 @@ class ProductoServicio
         return $result;
     }
 
-
+    public function ConsultarListaTotalDeProductosWoo(){
+        $page=1;
+        $tieneProducto = true;
+        $listProductosWoo = collect();
+        while($tieneProducto){
+            $lisProductosWooResult= collect($this->ConsultarProductosWoo(100,$page));
+            $listProductosWoo = $listProductosWoo->concat($lisProductosWooResult);
+            if($lisProductosWooResult->count() > 0)
+            {
+                $page = $page + 1;
+            }
+            else {
+                $tieneProducto =false;
+            }
+        }
+        return $listProductosWoo;
+    }
 }
