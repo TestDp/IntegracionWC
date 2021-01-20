@@ -86,11 +86,11 @@ class OrdenServicio
         return  $doc->saveXML();
     }
 
-    public function ValidarOrdenRepetidaSag($idDocumentoWoo){
+    public function ValidarOrdenRepetidaSag($idDocumentoWoo , $date){
         $result = $this->serviceClientSag->
         GetConsultaSagJson("select  ka_nl_tercero,d_fecha_documento, ss_nro_dcto
                             from movimientos
-                            where ss_nro_dcto =  '".$idDocumentoWoo."' ");
+                            where ss_nro_dcto =  '".$idDocumentoWoo."' and d_fecha_documento = '".$date."'");
         return $result;
     }
 }
