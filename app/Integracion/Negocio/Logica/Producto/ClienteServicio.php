@@ -80,7 +80,7 @@ class ClienteServicio
 
         $nombre = $doc -> createElement ( "nombre" );
         $nombre = $cliente -> appendChild ( $nombre );
-        $textnombre = $doc -> createTextNode ( $clienteWoo->first_name .$clienteWoo->last_name );
+        $textnombre = $doc -> createTextNode ( $clienteWoo->first_name ." ".$clienteWoo->last_name );
         $textnombre = $nombre -> appendChild ( $textnombre );
 
         $direccion = $doc -> createElement ( "direccion" );
