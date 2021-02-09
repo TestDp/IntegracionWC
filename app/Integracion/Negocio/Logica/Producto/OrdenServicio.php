@@ -77,7 +77,7 @@ class OrdenServicio
             $movimientoDetalle->setAttribute("iva", "19");
             $movimientoDetalle->setAttribute("descuento", "0");
             $movimientoDetalle->setAttribute("descuento2", "0");
-            $movimientoDetalle->setAttribute("bodega", "63");
+            $movimientoDetalle->setAttribute("bodega", "1");
             $ind = $ind + 1;
         }
         $movimientosOtrosDatos= $doc -> createElement ( "movimientosOtrosDatos" );
