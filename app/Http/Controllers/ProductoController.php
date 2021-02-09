@@ -36,7 +36,7 @@ class ProductoController extends Controller
     /**Carga inicial*/
     public function ActualizarProductosWoo(){
         $result =  $this->productoServicio->ActualizarProductosWoo();
-        dd($result);
+        Log::info('Actualización de productos en Woocomerce',array('Resultado de la actualización' => $result));
     }
 
     public  function  ActualizarInventarioProductosWoo(){

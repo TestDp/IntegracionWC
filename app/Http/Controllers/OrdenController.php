@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 
 use App\Integracion\Negocio\Logica\Producto\OrdenServicio;
 use DateTime;
+use Illuminate\Support\Facades\Log;
 
 class OrdenController extends Controller
 {
@@ -53,11 +54,11 @@ class OrdenController extends Controller
 
             //$this->ordenServicio->ValidarOrdenRepetidaSag($clienteWoo->s_identificador,$ordenWoo->id,$fechas[0]);
             IF ($this->ordenServicio->ValidarOrdenRepetidaSag($ordenWoo->id, $fechas[0]) == null) {
-
-            $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo, $clienteWoo);
-            $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
+                $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo, $clienteWoo);
+                $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
             }
         }
-        dd($resultados);
+        Log::info('Se han creado las ordenes con exito',array('Ordenes Creadas' => $ordenesWoo));
+        return "proceso terminado";
     }
 }
