@@ -108,7 +108,7 @@ class ProductoServicio
                                      on s.ka_nl_bodega = b.ka_nl_bodega
                                      inner join articulos as a
                                      on s.ka_nl_articulo = a.ka_nl_articulo
-                                     where b.ka_nl_bodega = 1 and k_sc_periodo =".$periodo);
+                                     where b.ka_nl_bodega = 1 and a.sc_tienda_virtual = 'S' and k_sc_periodo =".$periodo);
         return $result;
     }
 
