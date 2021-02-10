@@ -105,7 +105,7 @@ class ProductoServicio
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal, a.sc_referencia, a.sc_detalle_articulo, s.* 
+        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal, a.sc_detalle_articulo, a.sv_obs_articulo, a.ss_direccion_logo,s.* 
                                      from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
                                      on s.ka_nl_bodega = b.ka_nl_bodega
