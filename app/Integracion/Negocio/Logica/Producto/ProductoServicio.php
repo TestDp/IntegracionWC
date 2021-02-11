@@ -44,6 +44,19 @@ class ProductoServicio
             $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
             if(is_null($productoWoo)){
                 $this->CrearProductoWoo($productoSag);
+            }else{
+                $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
+                $formParams = ['name' => $productoSag->sc_detalle_articulo,
+                               'description' => $productoSag->sv_obs_articulo,
+                                'images' => [
+                                    [
+                                        'src' => env('RUTAIMAGENES').$nomreImagen
+                                        // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
+                                        //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
+                                    ]
+                                ]
+                              ];
+                $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/'.$productoWoo['id'],$formParams);
             }
         }
         return "success";
@@ -55,22 +68,16 @@ class ProductoServicio
         foreach ($result as $productoSag){
             $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
             $formParams = ['stock_quantity' => intval($productoSag->n_saldo_actual),
-                           'regular_price' => $productoSag->n_valor_venta_normal
-            ];
+                           'regular_price' => $productoSag->n_valor_venta_normal,
+                           'name' => $productoSag->sc_detalle_articulo,
+                           'description' => $productoSag->sv_obs_articulo];
             $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/'.$productoWoo['id'],$formParams);
         }
-
         return $result;
-
     }
+
     public  function CrearProductoWoo($productoSag){
-        $rutaImagen = $productoSag->ss_direccion_logo;
-        $nomreImagen = 'no-img.png';
-        if($rutaImagen != null  && $rutaImagen !="")
-        {
-            $partesRuta= collect(explode("\\",$rutaImagen));
-            $nomreImagen = $partesRuta->last();
-        }
+        $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
         $formaParams = [
             'name' => $productoSag->sc_detalle_articulo,
             'type' => 'simple',
@@ -99,14 +106,16 @@ class ProductoServicio
 
     public function ConsultarProductosSAG(){
         $result = $this->clienteServicioSag ->
-                    GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo,sv_obs_articulo,k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo 
+                    GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo,
+                                                       sv_obs_articulo,k_sc_codigo_articulo,
+                                                       ka_ni_grupo,ss_direccion_logo 
                                         from articulos where sc_tienda_virtual = 'S'");
         return $result;
     }
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal, a.sc_detalle_articulo, a.sv_obs_articulo, a.ss_direccion_logo,s.n_saldo_actual
+        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal,s.n_saldo_actual
                                      from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
                                      on s.ka_nl_bodega = b.ka_nl_bodega
@@ -132,5 +141,15 @@ class ProductoServicio
             }
         }
         return $listProductosWoo;
+    }
+
+    public function ObtenerNombreImagen($direccionLogo){
+        $nomreImagen = 'no-img.png';
+        if($direccionLogo != null  && $direccionLogo !="")
+        {
+            $partesRuta= collect(explode("\\",$direccionLogo));
+            $nomreImagen = $partesRuta->last();
+        }
+        return $nomreImagen;
     }
 }

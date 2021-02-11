@@ -51,8 +51,6 @@ class OrdenController extends Controller
             $ordenWoo = (object)$ordenWoo;
             $fechas = explode("T", $ordenWoo->date_created);
             $clienteWoo = (object)$this->clienteController->CrearClienteSagDesdeWoo($ordenWoo->customer_id);
-
-            //$this->ordenServicio->ValidarOrdenRepetidaSag($clienteWoo->s_identificador,$ordenWoo->id,$fechas[0]);
             IF ($this->ordenServicio->ValidarOrdenRepetidaSag($ordenWoo->id, $fechas[0]) == null) {
                 $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo, $clienteWoo);
                 $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
