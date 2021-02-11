@@ -9,14 +9,14 @@ use Illuminate\Http\Request;
 use \SoapClient;
 use  App\Http\Controllers;
 
-class CargaArticulos extends Command
+class CargaArticulosUpdate extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'consumo:servicios';
+    protected $signature = 'consumo:articulos';
 
     /**
      * The console command description.
@@ -50,8 +50,7 @@ class CargaArticulos extends Command
        // dd($result);
 
        // $this->pcontroller->CrearProductosWoo();
-
-        $this->pcontroller->ActualizarInventarioProductosWoo();
+        $this->pcontroller->ActualizarProductosWoo();
 
 
 
