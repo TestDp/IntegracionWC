@@ -35,17 +35,17 @@ class ProductoController extends Controller
     }
     /**Carga inicial*/
     public function ActualizarProductosWoo(){
+        date_default_timezone_set('America/Bogota');
         $result =  $this->productoServicio->ActualizarProductosWoo();
-        Log::info('Actualización de productos en Woocomerce',array('Resultado de la actualización' => $result));
+        Log::info('Actualización y creación de productos en Woocomerce',array('Resultado de la actualización y/o creación' => $result));
     }
 
     public  function  ActualizarInventarioProductosWoo(){
         date_default_timezone_set('America/Bogota');
         $Periodo = date('Ym');
         $result =  $this->productoServicio->ActualizarInventarioProductosWoo($Periodo);
-        Log::info('Actualizar Invetario Productos Woocommerce',array('Productos Actualizados' => $result));
+        Log::info('Actualizar Inventario de  Productos Woocommerce',array('Inventario actualizado de los siguientes productos' => $result));
         return "proceso terminado";
-
     }
 
     public function ConsultarProductosSAG(){

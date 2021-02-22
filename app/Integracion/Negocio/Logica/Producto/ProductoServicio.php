@@ -11,7 +11,7 @@ namespace App\Integracion\Negocio\Logica\Producto;
 
 use App\Integracion\Servicios\Rest\Woocommerce\ServiceClientWoo;
 use App\Integracion\Servicios\Soap\Sag\ServiceClientSag;
-use phpDocumentor\Reflection\Types\Collection;
+
 
 class ProductoServicio
 {
@@ -50,6 +50,7 @@ class ProductoServicio
                                'description' => $productoSag->sv_obs_articulo,
                                 'images' => [
                                     [
+                                        'id'=>$productoWoo['images'][0]['id'],
                                         'src' => env('RUTAIMAGENES').$nomreImagen
                                         // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
                                         //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
@@ -68,11 +69,24 @@ class ProductoServicio
         foreach ($result as $productoSag){
             $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
             $formParams = ['stock_quantity' => intval($productoSag->n_saldo_actual),
-                           'regular_price' => $productoSag->n_valor_venta_normal,
-                           'name' => $productoSag->sc_detalle_articulo,
-                           'description' => $productoSag->sv_obs_articulo];
+                           'regular_price' => $productoSag->n_valor_venta_normal];
             $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/'.$productoWoo['id'],$formParams);
         }
+        return $result;
+    }
+
+    public  function  ActualizarInventarioProductosWooBatch($periodo){
+        $result  = $this->ConsultarInventarioProductosSAG($periodo);
+        $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
+        $arrayData = [];
+        foreach ($result as $productoSag){
+            $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
+            $arrayData[] = ['id'=>$productoWoo['id'],
+                            'stock_quantity' => intval($productoSag->n_saldo_actual),
+                            'regular_price' => $productoSag->n_valor_venta_normal];
+        }
+        $formData = ['update' => $arrayData];
+        $this->clienteServicioWoo->Post('/wp-json/wc/v3/products/batch',$formData);
         return $result;
     }
 
