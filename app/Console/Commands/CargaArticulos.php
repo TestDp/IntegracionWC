@@ -55,6 +55,6 @@ class CargaArticulos extends Command
 
 
 
-        $this->info('Sec creo un producto con exito');
+        $this->info('Se Actualizo el inventario  con exito');
     }
 }

@@ -30,6 +30,7 @@ class ProductoController extends Controller
     }
 
     public function CrearProductosWoo(){
+
         $result =  $this->productoServicio->CrearProductoWoo();
         dd($result);
     }
@@ -49,7 +50,10 @@ class ProductoController extends Controller
     }
 
     public function ConsultarProductosSAG(){
-        $result =  $this->productoServicio->ConsultarProductosSAG();
+        date_default_timezone_set('America/Bogota');
+        $fechaActual = date('Y-m-d');
+        $fecha = date('Y-m-d',strtotime($fechaActual . "- 2 days"));
+        $result =  $this->productoServicio->ConsultarProductosSAG($fecha);
         dd($result);
     }
 

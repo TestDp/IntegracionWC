@@ -118,12 +118,12 @@ class ProductoServicio
     }
 
 
-    public function ConsultarProductosSAG(){
+    public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
                     GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo,
                                                        sv_obs_articulo,k_sc_codigo_articulo,
                                                        ka_ni_grupo,ss_direccion_logo 
-                                        from articulos where sc_tienda_virtual = 'S'");
+                                        from articulos where sc_tienda_virtual = 'S' and dd_fecha_ult_modificacion > ". $fecha);
         return $result;
     }
 
