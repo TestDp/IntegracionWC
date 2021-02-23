@@ -34,10 +34,12 @@ class ProductoController extends Controller
         $result =  $this->productoServicio->CrearProductoWoo();
         dd($result);
     }
-    /**Carga inicial*/
+
     public function ActualizarProductosWoo(){
         date_default_timezone_set('America/Bogota');
-        $result =  $this->productoServicio->ActualizarProductosWoo();
+        $fechaActual = date('Y-m-d');
+        $fecha = date('Y-m-d',strtotime($fechaActual . "- 2 days"));
+        $result =  $this->productoServicio->ActualizarProductosWoo($fecha);
         Log::info('Actualización y creación de productos en Woocomerce',array('Resultado de la actualización y/o creación' => $result));
     }
 

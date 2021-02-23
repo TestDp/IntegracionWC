@@ -37,8 +37,8 @@ class ProductoServicio
     }
 
 
-    public  function  ActualizarProductosWoo(){
-        $listProductosSag  = $this->ConsultarProductosSAG();
+    public  function  ActualizarProductosWoo($fecha){
+        $listProductosSag  = $this->ConsultarProductosSAG($fecha);
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         foreach ($listProductosSag as $productoSag){
             $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
@@ -123,7 +123,7 @@ class ProductoServicio
                     GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo,
                                                        sv_obs_articulo,k_sc_codigo_articulo,
                                                        ka_ni_grupo,ss_direccion_logo 
-                                        from articulos where sc_tienda_virtual = 'S' and dd_fecha_ult_modificacion > ". $fecha);
+                                        from articulos where sc_tienda_virtual = 'S' and dd_fecha_ult_modificacion > "."'". $fecha."'");
         return $result;
     }
 
