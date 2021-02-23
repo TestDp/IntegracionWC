@@ -25,7 +25,7 @@ class ProductoController extends Controller
         $this->productoServicio->CargaInicialWoo();
     }
     public  function  ConsultarProductosWoo(){
-      $result =  $this->productoServicio->ConsultarProductosWoo(100);
+      $result =  $this->productoServicio->ConsultarProductosWoo(100,1);
         dd($result);
     }
 
