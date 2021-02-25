@@ -68,9 +68,11 @@ class ProductoServicio
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         foreach ($result as $productoSag){
             $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
-            $formParams = ['stock_quantity' => intval($productoSag->n_saldo_actual),
-                           'regular_price' => $productoSag->n_valor_venta_normal];
-            $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/'.$productoWoo['id'],$formParams);
+            if($productoWoo != null) {
+                $formParams = ['stock_quantity' => intval($productoSag->n_saldo_actual),
+                    'regular_price' => $productoSag->n_valor_venta_normal];
+                $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/' . $productoWoo['id'], $formParams);
+            }
         }
         return $result;
     }
