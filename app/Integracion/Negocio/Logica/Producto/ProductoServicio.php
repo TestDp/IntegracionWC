@@ -68,13 +68,31 @@ class ProductoServicio
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         foreach ($result as $productoSag){
             $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
-            $formParams = ['stock_quantity' => intval($productoSag->n_saldo_actual),
-                           'regular_price' => $productoSag->n_valor_venta_normal];
-            $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/'.$productoWoo['id'],$formParams);
+            if($productoWoo != null) {
+                $formParams = ['stock_quantity' => intval($productoSag->n_saldo_actual),
+                    'regular_price' => $productoSag->n_valor_venta_normal];
+                $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/' . $productoWoo['id'], $formParams);
+            }else{
+                $listProductosWooVariables = $listProductosWoo->where('type','=','variable');
+                $this->ActuaizarProductoWooVariable($listProductosWooVariables,$productoSag);
+            }
         }
         return $result;
     }
 
+    public function ActuaizarProductoWooVariable($listProductosWoo,$productoSag){
+        foreach ($listProductosWoo as $productoWoo){
+            $productosWooVariables = collect( $this->clienteServicioWoo->Get('/wp-json/wc/v3/products/'.$productoWoo['id'].'/variations'));
+            $productoWooVariable =  $productosWooVariables->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
+            if($productoWooVariable != null) {
+                $formParams = ['stock_quantity' => intval($productoSag->n_saldo_actual),
+                    'regular_price' => $productoSag->n_valor_venta_normal];
+                $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/' . $productoWoo['id']. '/variations/' .$productoWooVariable['id'], $formParams);
+                break;
+            }
+
+        }
+    }
     public  function  ActualizarInventarioProductosWooBatch($periodo){
         $result  = $this->ConsultarInventarioProductosSAG($periodo);
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
