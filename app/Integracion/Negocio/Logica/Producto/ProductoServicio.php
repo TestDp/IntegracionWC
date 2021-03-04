@@ -138,9 +138,9 @@ class ProductoServicio
 
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
-                    GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo,
+                    GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo, sc_estanteria,
                                                        sv_obs_articulo,k_sc_codigo_articulo,
-                                                       ka_ni_grupo,ss_direccion_logo , a.ka_ni_grupo
+                                                       ka_ni_grupo,ss_direccion_logo , ka_ni_grupo
                                         from articulos WITH(NOLOCK)
                                         where sc_tienda_virtual = 'S' and dd_fecha_ult_modificacion > "."'". $fecha."'");
         return $result;
@@ -148,7 +148,7 @@ class ProductoServicio
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal,s.n_saldo_actual, a.ka_ni_grupo
+        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal,s.n_saldo_actual, a.ka_ni_grupo, sc_estanteria
                                      from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
                                      on s.ka_nl_bodega = b.ka_nl_bodega
