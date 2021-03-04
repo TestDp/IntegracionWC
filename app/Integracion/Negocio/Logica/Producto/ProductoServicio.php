@@ -87,6 +87,7 @@ class ProductoServicio
                 $formParams = $this->ObtenerArrayProducto($productoSag,$productoWoo['id']);
                 $arrayData[] = $formParams;
                 $contadorProductosSimples++;
+                $tamanioArrayProdutoSimple++;
                 if($tamanioArrayProdutoSimple > 98 || $contadorProductosSimples == $totalProductosSimplesSAG)
                 {
                     $formData = ['update' => $arrayData];
@@ -133,14 +134,15 @@ class ProductoServicio
                 if($productoSAG != null) {
                     $formParams = $this->ObtenerArrayProducto($productoSAG,$variacionProducto['id']);
                     $arrayData[] = $formParams;
-                    $contadorProductosVariables++;
-                    if($tamanioArrayProdutoVariable > 98 || $contadorProductosVariables == $cantidadDeVariaciones)
-                    {
-                        $formData = ['update' => $arrayData];
-                        $this->clienteServicioWoo->post('/wp-json/wc/v3/products/' . $productoWoo['id']. '/variations/batch' , $formData);
-                        $arrayData = [];
-                        $tamanioArrayProdutoVariable = 0;
-                    }
+                    $tamanioArrayProdutoVariable++;
+                }
+                $contadorProductosVariables++;
+                if(($tamanioArrayProdutoVariable > 98 || $contadorProductosVariables == $cantidadDeVariaciones) && $tamanioArrayProdutoVariable > 0)
+                {
+                    $formData = ['update' => $arrayData];
+                    $this->clienteServicioWoo->post('/wp-json/wc/v3/products/' . $productoWoo['id']. '/variations/batch' , $formData);
+                    $arrayData = [];
+                    $tamanioArrayProdutoVariable = 0;
                 }
             }
         }
@@ -158,7 +160,7 @@ class ProductoServicio
 
         }
     }**/
-    public  function  ActualizarInventarioProductosWooBatch($periodo){
+   /** public  function  ActualizarInventarioProductosWooBatch($periodo){
         $result  = $this->ConsultarInventarioProductosSAG($periodo);
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         $arrayData = [];
@@ -171,7 +173,7 @@ class ProductoServicio
         $formData = ['update' => $arrayData];
         $this->clienteServicioWoo->Post('/wp-json/wc/v3/products/batch',$formData);
         return $result;
-    }
+    }**/
 
     public  function CrearProductoWoo($productoSag){
         $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
