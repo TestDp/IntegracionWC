@@ -54,7 +54,7 @@ class ClienteServicio
 
         $actividadComercial = $doc -> createElement ( "actividadComercial" );
         $actividadComercial = $cliente -> appendChild ( $actividadComercial );
-        $textId = $doc -> createTextNode ( "Negociante" );
+        $textId = $doc -> createTextNode ( "COMERCIANTE" );
         $textId = $actividadComercial -> appendChild ( $textId );
 
         $codigoDaneCiudad = $doc -> createElement ( "codigoDaneCiudad" );
@@ -75,7 +75,7 @@ class ClienteServicio
 
         $documento = $doc -> createElement ( "documento" );
         $documento = $cliente -> appendChild ( $documento );
-        $textdocumento = $doc -> createTextNode ( $clienteWoo->billing->company);
+        $textdocumento = $doc -> createTextNode ( $clienteWoo->billing->phone);//despues de que se pida la cc de la woo se cambia por company
         $textdocumento = $documento -> appendChild ( $textdocumento );
 
         $nombre = $doc -> createElement ( "nombre" );
@@ -119,7 +119,7 @@ class ClienteServicio
         // validar zona en SAG   .. siempre ponen marinilla
         $zona = $doc -> createElement ( "zona" );
         $zona = $cliente -> appendChild ( $zona );
-        $textzona = $doc -> createTextNode ( "Marinilla" );
+        $textzona = $doc -> createTextNode ( "ANTIOQUIA" );
         $textzona = $zona -> appendChild ( $textzona );
 
         // siempre es quemado en N por ser siempre persona natural
@@ -149,7 +149,7 @@ class ClienteServicio
         //siempre es MINORISTA por ser persona natural
         $tipoCliente = $doc -> createElement ( "tipoCliente" );
         $tipoCliente = $cliente -> appendChild ( $tipoCliente );
-        $texttipoCliente = $doc -> createTextNode ( "PARTICULARES" );
+        $texttipoCliente = $doc -> createTextNode ( "OTROS" );
         $texttipoCliente = $tipoCliente -> appendChild ( $texttipoCliente );
 
         //siempre es 0 numeric
