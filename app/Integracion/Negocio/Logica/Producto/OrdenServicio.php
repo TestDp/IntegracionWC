@@ -9,6 +9,7 @@
 namespace App\Integracion\Negocio\Logica\Producto;
 
 
+use App\Integracion\Comunes\Constantes;
 use App\Integracion\Servicios\Rest\Woocommerce\ServiceClientWoo;
 use App\Integracion\Servicios\Soap\Sag\ServiceClientSag;
 use DOMDocument;
@@ -25,16 +26,16 @@ class OrdenServicio
     }
 
     public function  ConsultarOrdenesWoo(){
-        $result =  $this->serviceClientWoo->Get('/wp-json/wc/v3/orders');
+        $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES);
         return $result;
     }
     public function  ConsultarOrdenesWooByDate($fecha){
-        $result =  $this->serviceClientWoo->Get('/wp-json/wc/v3/orders?after='.$fecha);
+        $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES.'.?after='.$fecha);
         return $result;
     }
 
     public function  ConsultarOrdenWoo($idOrdenWoo){
-        $result =  $this->serviceClientWoo->Get('/wp-json/wc/v3/orders/'.$idOrdenWoo);
+        $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES.'/'.$idOrdenWoo);
         return $result;
     }
 

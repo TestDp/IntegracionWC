@@ -8,6 +8,7 @@
 
 namespace App\Integracion\Negocio\Logica\Producto;
 
+use App\Integracion\Comunes\Constantes;
 use App\Integracion\Servicios\Rest\Woocommerce\ServiceClientWoo;
 use App\Integracion\Servicios\Soap\Sag\ServiceClientSag;
 use DOMDocument;
@@ -24,12 +25,12 @@ class ClienteServicio
     }
 
     public  function  ConsultarClientesWoo(){
-       $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/customers');
+       $result =  $this->clienteServicioWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTCLIENTES);
         return $result;
     }
 
     public  function  ConsultarClienteWoo($idClienteWoo){
-        $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/customers/'.$idClienteWoo);
+        $result =  $this->clienteServicioWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTCLIENTES.'/'.$idClienteWoo);
         return $result;
     }
 

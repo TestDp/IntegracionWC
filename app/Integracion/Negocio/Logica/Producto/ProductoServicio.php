@@ -9,6 +9,7 @@
 namespace App\Integracion\Negocio\Logica\Producto;
 
 
+use App\Integracion\Comunes\Constantes;
 use App\Integracion\Servicios\Rest\Woocommerce\ServiceClientWoo;
 use App\Integracion\Servicios\Soap\Sag\ServiceClientSag;
 
@@ -32,7 +33,7 @@ class ProductoServicio
     }
 
     public  function  ConsultarProductosWoo($cantResgiXpagina,$nroPagina){
-        $result =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/products?per_page='.$cantResgiXpagina.'&&page='.$nroPagina);
+        $result =  $this->clienteServicioWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'?per_page='.$cantResgiXpagina.'&&page='.$nroPagina);
         return $result;
     }
 
@@ -64,48 +65,28 @@ class ProductoServicio
     }
 
     public  function  ActualizarInventarioProductosWoo($periodo){
+
         $result  = collect($this->ConsultarInventarioProductosSAG($periodo));
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
-
         $listProductosVariablesWoo = $listProductosWoo->where('type','=','variable');
         $listProductosSimpleWoo = $listProductosWoo->where('type','=','simple');
 
-        $listProductosSimplesSAG = $result->where('ka_ni_grupo','=',166);
-        $listProducVariablesSAG = $result->where('ka_ni_grupo','!=',166);
+        $listProductosSimplesSAG = $result->where('ka_ni_grupo','=',Constantes::$CODIGOGRUPOSAG);
+        $listProducVariablesSAG = $result->where('ka_ni_grupo','!=',Constantes::$CODIGOGRUPOSAG);
 
         $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
 
-
-        $contadorProductosSimples = 0;
-        $totalProductosSimplesSAG = count($listProductosSimplesSAG);
-        $tamanioArrayProdutoSimple =0;
-        $arrayData = [];
-        /*  INICIO bloque para actualizar los productos simples*/
-        foreach ($listProductosSimplesSAG as $productoSag){
-            $productoWoo =  $listProductosSimpleWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
-            if($productoWoo != null) {
-                $formParams = $this->ObtenerArrayProducto($productoSag,$productoWoo['id']);
-                $arrayData[] = $formParams;
-                $contadorProductosSimples++;
-                $tamanioArrayProdutoSimple++;
-                if($tamanioArrayProdutoSimple > 98 || $contadorProductosSimples == $totalProductosSimplesSAG)
-                {
-                    $formData = ['update' => $arrayData];
-                    $this->clienteServicioWoo->Post('/wp-json/wc/v3/products/batch',$formData);
-                    $arrayData = [];
-                    $tamanioArrayProdutoSimple = 0;
-                }
-            }
-        }
-        /*FIN bloque para actualizar los productos simples*/
-        $this->ActuaizarProductoWooVariable($listProductosVariablesWoo,$listaVariacionesProductosWoo,$listProducVariablesSAG);
+        $this->ActuaizarInventarioProductoWooSimple($listProductosSimpleWoo,$listProductosSimplesSAG);
+        $this->ActuaizarInventarioProductoWooVariable($listProductosVariablesWoo,$listaVariacionesProductosWoo,$listProducVariablesSAG);
         return $result;
     }
 
     public function ObtenerVariacionesProductosWoo($listProductosWooVariables){
         $listaVariacionesWoo =  [];
         foreach ($listProductosWooVariables as $productoWoo){
-            $listTem =  $this->clienteServicioWoo->Get('/wp-json/wc/v3/products/'.$productoWoo['id'].'/variations');
+            $listTem =  $this->clienteServicioWoo
+                ->Get(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$productoWoo['id'].
+                    Constantes::$ENDPOINTVARIACIONES);
             $listaVariacionesWoo= array_merge($listaVariacionesWoo,$listTem);
         }
         return collect($listaVariacionesWoo);
@@ -121,7 +102,7 @@ class ProductoServicio
         return $formParams;
     }
 
-    public function ActuaizarProductoWooVariable($listProductosWooVariables,$listaVariacionesProductosWoo,$listProducVariablesSAG)
+    public function ActuaizarInventarioProductoWooVariable($listProductosWooVariables,$listaVariacionesProductosWoo,$listProducVariablesSAG)
     {
         foreach ($listProductosWooVariables as $productoWoo){
             $variacionesXProducto =  $listaVariacionesProductosWoo->whereIn('id',$productoWoo['variations']);
@@ -130,50 +111,51 @@ class ProductoServicio
             $contadorProductosVariables=0;
             $arrayData = [];
             foreach ($variacionesXProducto as $variacionProducto){
-                $productoSAG = $listProducVariablesSAG->firstWhere('k_sc_codigo_articulo','=',$variacionProducto['sku']);
+                $productoSAG = $listProducVariablesSAG->firstWhere('k_sc_codigo_articulo','=',$variacionProducto[Constantes::$SKU]);
                 if($productoSAG != null) {
                     $formParams = $this->ObtenerArrayProducto($productoSAG,$variacionProducto['id']);
                     $arrayData[] = $formParams;
                     $tamanioArrayProdutoVariable++;
                 }
                 $contadorProductosVariables++;
-                if(($tamanioArrayProdutoVariable > 98 || $contadorProductosVariables == $cantidadDeVariaciones) && $tamanioArrayProdutoVariable > 0)
+                if(($tamanioArrayProdutoVariable > Constantes::$MAXPETICIONBACHTWOO ||
+                        $contadorProductosVariables == $cantidadDeVariaciones) && $tamanioArrayProdutoVariable > 0)
                 {
                     $formData = ['update' => $arrayData];
-                    $this->clienteServicioWoo->post('/wp-json/wc/v3/products/' . $productoWoo['id']. '/variations/batch' , $formData);
+                    $this->clienteServicioWoo
+                        ->post(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS. '/' .
+                            $productoWoo['id']. Constantes::$ENDPOINTVARIACIONES.Constantes::$ENDPOINTBATCH , $formData);
                     $arrayData = [];
                     $tamanioArrayProdutoVariable = 0;
                 }
             }
         }
     }
-   /** public function ActuaizarProductoWooVariable($listProductosWooVariables,$productoSag){
-        foreach ($listProductosWooVariables as $productoWoo){
-            $productosWooVariables = collect( $this->clienteServicioWoo->Get('/wp-json/wc/v3/products/'.$productoWoo['id'].'/variations'));
-            $productoWooVariable =  $productosWooVariables->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
-            if($productoWooVariable != null) {
-                $formParams = ['stock_quantity' => intval($productoSag->n_saldo_actual),
-                    'regular_price' => $productoSag->n_valor_venta_normal];
-                $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/' . $productoWoo['id']. '/variations/' .$productoWooVariable['id'], $formParams);
-                break;
-            }
 
-        }
-    }**/
-   /** public  function  ActualizarInventarioProductosWooBatch($periodo){
-        $result  = $this->ConsultarInventarioProductosSAG($periodo);
-        $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
+    public function ActuaizarInventarioProductoWooSimple($listProductosSimpleWoo,$listProductosSimplesSAG){
+        $contadorProductosSimples = 0;
+        $totalProductosSimplesSAG = count($listProductosSimplesSAG);
+        $tamanioArrayProdutoSimple =0;
         $arrayData = [];
-        foreach ($result as $productoSag){
-            $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
-            $arrayData[] = ['id'=>$productoWoo['id'],
-                            'stock_quantity' => intval($productoSag->n_saldo_actual),
-                            'regular_price' => $productoSag->n_valor_venta_normal];
+        foreach ($listProductosSimplesSAG as $productoSag){
+            $productoWoo =  $listProductosSimpleWoo->firstWhere(Constantes::$SKU,'=',$productoSag->k_sc_codigo_articulo);
+            if($productoWoo != null) {
+                $formParams = $this->ObtenerArrayProducto($productoSag,$productoWoo['id']);
+                $arrayData[] = $formParams;
+                $tamanioArrayProdutoSimple++;
+            }
+            $contadorProductosSimples++;
+            if(($tamanioArrayProdutoSimple > Constantes::$MAXPETICIONBACHTWOO ||
+                $contadorProductosSimples == $totalProductosSimplesSAG) && $tamanioArrayProdutoSimple > 0)
+            {
+                $formData = ['update' => $arrayData];
+                $this->clienteServicioWoo->Post(Constantes::$URLBASE.
+                    Constantes::$ENDPOINTPRODUCTOS.Constantes::$ENDPOINTBATCH,$formData);
+                $arrayData = [];
+                $tamanioArrayProdutoSimple = 0;
+            }
         }
-        $formData = ['update' => $arrayData];
-        $this->clienteServicioWoo->Post('/wp-json/wc/v3/products/batch',$formData);
-        return $result;
-    }**/
+    }
 
     public  function CrearProductoWoo($productoSag){
         $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
@@ -198,10 +180,9 @@ class ProductoServicio
                 ]
             ]
         ];
-        $result = $this->clienteServicioWoo->Post('/wp-json/wc/v3/products',$formaParams);
+        $result = $this->clienteServicioWoo->Post(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS,$formaParams);
         return $result;
     }
-
 
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->

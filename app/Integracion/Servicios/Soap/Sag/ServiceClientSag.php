@@ -18,7 +18,7 @@ class ServiceClientSag
     private $tokenSag;
 
     public function __construct(){
-        $this->baseUrlSag = env('API_ENDPOINT_SAG');
+        $this->baseUrlSag = env('HOST_SAG');
         $this->tokenSag = env('TOKEN_SAG');
         $this->clientSoap = new SoapClient($this->baseUrlSag);
     }

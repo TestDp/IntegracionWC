@@ -20,7 +20,7 @@ class ServiceClientWoo
 
 
     public function __construct(){
-        $this->baseUrl = env('API_ENDPOINT_DETALLISTAS');
+        $this->baseUrl = env('HOST_DETALLISTAS');
         $this->claveClienteWoo = env('CLAVE_CLIENTE_DETALLISTAS');
         $this->claveSecretaWoo = env('CLAVE_SECRETA_DETALLISTAS');
         $this->clientRest =new Client(
