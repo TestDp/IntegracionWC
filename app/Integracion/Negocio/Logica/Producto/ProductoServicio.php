@@ -47,26 +47,62 @@ class ProductoServicio
     public  function  ActualizarProductosWoo($fecha){
         $listProductosSag  = $this->ConsultarProductosSAG($fecha);
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
-        foreach ($listProductosSag as $productoSag){
-            $productoWoo =  $listProductosWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
+
+        $listProductosVariablesWoo = $listProductosWoo->where('type','=','variable');
+        $listProductosSimpleWoo = $listProductosWoo->where('type','=','simple');
+
+        $listProductosSimplesSAG = $listProductosSag->where('ka_ni_grupo','=',166);
+        $listProducVariablesSAG = $listProductosSag->where('ka_ni_grupo','!=',166);
+
+        $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
+
+
+        foreach ($listProductosSimplesSAG as $productoSag){
+            $productoWoo =  $listProductosSimpleWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
             if(is_null($productoWoo)){
                 $this->CrearProductoWoo($productoSag);
             }else{
                 $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
                 $formParams = ['name' => $productoSag->sc_detalle_articulo,
-                               'description' => $productoSag->sv_obs_articulo,
-                                'images' => [
-                                    [
-                                        'id'=>$productoWoo['images'][0]['id'],
-                                        'src' => env('RUTAIMAGENES').$nomreImagen
-                                        // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
-                                        //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
-                                    ]
-                                ]
-                              ];
+                    'description' => $productoSag->sv_obs_articulo,
+                    'images' => [
+                        [
+                            'id'=>$productoWoo['images'][0]['id'],
+                            'src' => env('RUTAIMAGENES').$nomreImagen
+                            // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
+                            //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
+                        ]
+                    ]
+                ];
                 $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/'.$productoWoo['id'],$formParams);
             }
         }
+
+        foreach ($listProducVariablesSAG as $productovariableSag){
+           $productoWoo =  $listProductosVariablesWoo->firstWhere('name','=',$productovariableSag->sc_descripcion_referente)
+                                                        ->AndWhere('sku', '=',' ');
+
+            if(is_null($productoWoo)){
+
+                $this->CrearProductoVariableWoo($productovariableSag);
+            }
+            else {
+                $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere('sku', '=', $productovariableSag->k_sc_codigo_articulo);
+
+                if (is_null($productoWooVariacion)) {
+                    $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id']);
+                } else {
+
+                    $formParams = ['name' => $productovariableSag->sc_detalle_articulo,
+                        'description' => $productovariableSag->sv_obs_articulo
+
+                    ];
+                    $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/' . $productoWoo['id'].'/variations/'.$productoWooVariacion['id'], $formParams);
+
+                }
+            }
+        }
+
         return "success";
     }
 
@@ -99,12 +135,12 @@ class ProductoServicio
     }
     /**
      * retorna un arreglo con la informacion del producto para actualizar
-    */
+     */
     public function ObtenerArrayProducto($productoSag,$idProductoWoo)
     {
         $formParams = ['id'=>$idProductoWoo,
-                       'stock_quantity' => intval($productoSag->n_saldo_actual),
-                       'regular_price' => $productoSag->n_valor_venta_normal];
+            'stock_quantity' => intval($productoSag->n_saldo_actual),
+            'regular_price' => $productoSag->n_valor_venta_normal];
         return $formParams;
     }
 
@@ -152,7 +188,7 @@ class ProductoServicio
             }
             $contadorProductosSimples++;
             if(($tamanioArrayProdutoSimple > Constantes::$MAXPETICIONBACHTWOO ||
-                $contadorProductosSimples == $totalProductosSimplesSAG) && $tamanioArrayProdutoSimple > 0)
+                    $contadorProductosSimples == $totalProductosSimplesSAG) && $tamanioArrayProdutoSimple > 0)
             {
                 $formData = ['update' => $arrayData];
                 $this->clienteServicioWoo->Post(Constantes::$URLBASE.
@@ -190,19 +226,84 @@ class ProductoServicio
         return $result;
     }
 
+
+    public  function CrearProductoVariacionWoo($productoSag,$id){
+
+        $data = [
+
+            'regular_price' => $productoSag->n_valor_venta_normal,
+            "sku" => $productoSag->k_sc_codigo_articulo,
+            'manage_stock' => true,
+            'attributes' => [
+                [
+                    [
+                        'id' => 9,
+                        'options' => $productoSag->Talla
+                    ]
+                ]
+            ]
+        ];
+        $result = $this->clienteServicioWoo->post('products/'.$id.'/variations', $data);
+        return $result;
+    }
+
+    public  function CrearProductoVariableWoo($productoSag){
+        $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
+        $formaParams = [
+            'name' => $productoSag->sc_descripcion_referente,
+            'type' => 'variable',
+            'regular_price' => $productoSag->n_valor_venta_normal,
+            'description' => $productoSag->sv_obs_articulo,
+            'short_description' => $productoSag->sv_obs_articulo,
+            "sku" => ' ',
+            'manage_stock' => true,
+            'categories' => [
+                [
+                    'id'=> $productoSag->ka_ni_grupo
+                ]
+            ],
+            'images' => [
+                [
+                    'src' => env('RUTAIMAGENES').$nomreImagen
+                    // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
+                    //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
+                ]
+            ]
+            ,
+            'attributes' => [
+                [
+                    [
+                        'name' => 'Size',
+                        'position' => 0,
+                        'visible' => true,
+                        'variation' => true,
+                        //'options' => [
+                        //    '33',
+                        //    '34'
+                        //]
+                    ]
+                ]
+            ]
+        ];
+        $result = $this->clienteServicioWoo->Post('/wp-json/wc/v3/products',$formaParams);
+        $this->CrearProductoVariacionWoo($productoSag,$result['id']);
+        return $result;
+    }
+
+
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
-                    GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo, sc_estanteria,
-                                                       sv_obs_articulo,k_sc_codigo_articulo,
-                                                       ka_ni_grupo,ss_direccion_logo , ka_ni_grupo
-                                        from articulos WITH(NOLOCK)
-                                        where sc_tienda_virtual = 'S' and dd_fecha_ult_modificacion > "."'". $fecha."'");
+        GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo, ss_descripcion_referente,
+                            substring(sc_detalle_articulo, (len(sc_detalle_articulo)-1), len(sc_detalle_articulo)) as Talla, sv_obs_articulo,
+                            k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo , ka_ni_grupo
+                            from articulos WITH(NOLOCK)
+                            where sc_tienda_virtual = 'S' and dd_fecha_ult_modificacion > "."'". $fecha."'");
         return $result;
     }
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal,s.n_saldo_actual, a.ka_ni_grupo, sc_estanteria
+        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal , a.n_valor_venta_especial,a.n_valor_venta_promocion ,s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
                                      from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
                                      on s.ka_nl_bodega = b.ka_nl_bodega
