@@ -33,7 +33,7 @@ class CargaArticulos extends Command
     public $pcontroller;
     public function __construct( ProductoController  $controllerProducto)
     {
-        parent::__construct();
+         parent::__construct();
         $this->pcontroller = $controllerProducto;
     }
 

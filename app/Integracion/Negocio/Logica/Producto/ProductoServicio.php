@@ -20,8 +20,14 @@ class ProductoServicio
     public $clienteServicioWoo;
     public $clienteServicioSag;
 
-    public function __construct(ServiceClientWoo $clienteServicioWoo, ServiceClientSag $clienteServicioSag){
+   /** public function __construct(ServiceClientSag $clienteServicioSag,ServiceClientWoo $clienteServicioWoo){
         $this->clienteServicioWoo = $clienteServicioWoo;
+        $this->clienteServicioSag = $clienteServicioSag;
+    }**/
+
+    public function __construct(ServiceClientSag $clienteServicioSag){
+        $this->clienteServicioWoo = new ServiceClientWoo(env('HOST_DETALLISTAS'),
+            env('CLAVE_CLIENTE_DETALLISTAS'),env('CLAVE_SECRETA_DETALLISTAS'));
         $this->clienteServicioSag = $clienteServicioSag;
     }
 

@@ -39,3 +39,8 @@ Route::get('/saveCustomer', 'ClienteController@CrearClienteSagDesdeWoo')->name('
 Route::get('/saveOrden', 'OrdenController@CrearOrdenSagDesdeWoo')->name('saveOrden');
 Route::get('/saveOrders', 'OrdenController@CrearOrdenesSagDesdeWoo')->name('saveOrders');
 
+
+Route::get('/comandos', function () {
+    Artisan::call('consumo:servicios');
+});
+
