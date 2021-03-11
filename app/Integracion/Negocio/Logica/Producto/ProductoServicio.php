@@ -25,6 +25,9 @@ class ProductoServicio
         $this->clienteServicioSag = $clienteServicioSag;
     }
 
+    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
+        $this->clienteServicioWoo->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
+    }
  /* public function __construct(ServiceClientSag $clienteServicioSag){
         $this->clienteServicioWoo = new ServiceClientWoo('https://detallistas.distrivenus.com/',
             env('CLAVE_CLIENTE_DETALLISTAS'),env('CLAVE_SECRETA_DETALLISTAS'));
@@ -107,7 +110,7 @@ class ProductoServicio
         return "success";
     }
 
-    public  function  ActualizarInventarioProductosWoo($periodo){
+    public  function  ActualizarInventarioProductosWoo($periodo,$tipoPrecio){
 
         $result  = collect($this->ConsultarInventarioProductosSAG($periodo));
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
@@ -119,8 +122,9 @@ class ProductoServicio
 
         $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
 
-        $this->ActuaizarInventarioProductoWooSimple($listProductosSimpleWoo,$listProductosSimplesSAG);
-        $this->ActuaizarInventarioProductoWooVariable($listProductosVariablesWoo,$listaVariacionesProductosWoo,$listProducVariablesSAG);
+        $this->ActuaizarInventarioProductoWooSimple($listProductosSimpleWoo,$listProductosSimplesSAG,$tipoPrecio);
+        $this->ActuaizarInventarioProductoWooVariable($listProductosVariablesWoo,$listaVariacionesProductosWoo,
+            $listProducVariablesSAG,$tipoPrecio);
         return $result;
     }
 
@@ -137,15 +141,18 @@ class ProductoServicio
     /**
      * retorna un arreglo con la informacion del producto para actualizar
      */
-    public function ObtenerArrayProducto($productoSag,$idProductoWoo)
+    public function ObtenerArrayProducto($productoSag,$idProductoWoo,$tipoPrecio)
     {
         $formParams = ['id'=>$idProductoWoo,
             'stock_quantity' => intval($productoSag->n_saldo_actual),
-            'regular_price' => $productoSag->n_valor_venta_normal];
+            'regular_price' =>(Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->n_valor_venta_normal:
+                              (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->n_valor_venta_especial:
+                                  $productoSag->n_valor_venta_promocion];
         return $formParams;
     }
 
-    public function ActuaizarInventarioProductoWooVariable($listProductosWooVariables,$listaVariacionesProductosWoo,$listProducVariablesSAG)
+    public function ActuaizarInventarioProductoWooVariable($listProductosWooVariables,$listaVariacionesProductosWoo,
+                                                           $listProducVariablesSAG,$tipoPrecio)
     {
         foreach ($listProductosWooVariables as $productoWoo){
             $variacionesXProducto =  $listaVariacionesProductosWoo->whereIn('id',$productoWoo['variations']);
@@ -156,7 +163,7 @@ class ProductoServicio
             foreach ($variacionesXProducto as $variacionProducto){
                 $productoSAG = $listProducVariablesSAG->firstWhere('k_sc_codigo_articulo','=',$variacionProducto[Constantes::$SKU]);
                 if($productoSAG != null) {
-                    $formParams = $this->ObtenerArrayProducto($productoSAG,$variacionProducto['id']);
+                    $formParams = $this->ObtenerArrayProducto($productoSAG,$variacionProducto['id'],$tipoPrecio);
                     $arrayData[] = $formParams;
                     $tamanioArrayProdutoVariable++;
                 }
@@ -175,7 +182,7 @@ class ProductoServicio
         }
     }
 
-    public function ActuaizarInventarioProductoWooSimple($listProductosSimpleWoo,$listProductosSimplesSAG){
+    public function ActuaizarInventarioProductoWooSimple($listProductosSimpleWoo,$listProductosSimplesSAG,$tipoPrecio){
         $contadorProductosSimples = 0;
         $totalProductosSimplesSAG = count($listProductosSimplesSAG);
         $tamanioArrayProdutoSimple =0;
@@ -183,7 +190,7 @@ class ProductoServicio
         foreach ($listProductosSimplesSAG as $productoSag){
             $productoWoo =  $listProductosSimpleWoo->firstWhere(Constantes::$SKU,'=',$productoSag->k_sc_codigo_articulo);
             if($productoWoo != null) {
-                $formParams = $this->ObtenerArrayProducto($productoSag,$productoWoo['id']);
+                $formParams = $this->ObtenerArrayProducto($productoSag,$productoWoo['id'],$tipoPrecio);
                 $arrayData[] = $formParams;
                 $tamanioArrayProdutoSimple++;
             }

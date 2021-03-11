@@ -21,6 +21,10 @@ class ProductoController extends Controller
         $this->productoServicio = $productoServicio;
     }
 
+    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
+        $this->productoServicio->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
+    }
+
     public function CargaInicialWoo(){
         $this->productoServicio->CargaInicialWoo();
     }
@@ -30,7 +34,6 @@ class ProductoController extends Controller
     }
 
     public function CrearProductosWoo(){
-
         $result =  $this->productoServicio->CrearProductoWoo();
         dd($result);
     }
@@ -43,10 +46,10 @@ class ProductoController extends Controller
         Log::info('Actualización y creación de productos en Woocomerce',array('Resultado de la actualización y/o creación' => $result));
     }
 
-    public  function  ActualizarInventarioProductosWoo(){
+    public  function  ActualizarInventarioProductosWoo($tipoPrecio){
         date_default_timezone_set('America/Bogota');
         $Periodo = date('Ym');
-        $result =  $this->productoServicio->ActualizarInventarioProductosWoo($Periodo);
+        $result =  $this->productoServicio->ActualizarInventarioProductosWoo($Periodo,$tipoPrecio);
         Log::info('Actualizar Inventario de  Productos Woocommerce',array('Inventario actualizado de los siguientes productos' => $result));
         return "proceso terminado";
     }

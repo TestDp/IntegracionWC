@@ -13,30 +13,17 @@ use GuzzleHttp\Client;
 
 class ServiceClientWoo
 {
-    private $baseUrl;
+
     private $clientRest;
-    private $claveClienteWoo;
-    private $claveSecretaWoo;
 
+    public function __construct(){}
 
-  public function __construct(){
-        $this->baseUrl = env('HOST_DETALLISTAS');
-        $this->claveClienteWoo = env('CLAVE_CLIENTE_DETALLISTAS');
-        $this->claveSecretaWoo = env('CLAVE_SECRETA_DETALLISTAS');
-        $this->clientRest =new Client(
-            ['base_uri' => $this->baseUrl ,
-                'auth' => [$this->claveClienteWoo, $this->claveSecretaWoo]
+    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
+        $this->clientRest = new Client(
+            ['base_uri' => $baseUrl ,
+                'auth' => [$claveClienteWoo, $claveSecretaWoo]
             ]);
     }
-  /* public function __construct($baseUrl,$claveClienteWoo,$claveSecretaWoo){
-        $this->baseUrl = $baseUrl;
-        $this->claveClienteWoo = $claveClienteWoo;
-        $this->claveSecretaWoo = $claveSecretaWoo;
-        $this->clientRest = new Client(
-            ['base_uri' => $this->baseUrl ,
-                'auth' => [$this->claveClienteWoo, $this->claveSecretaWoo]
-            ]);
-    }*/
 
     public function  Get($url_api){
         $res = $this->clientRest->get($url_api);

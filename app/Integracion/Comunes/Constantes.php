@@ -13,6 +13,13 @@ class Constantes
 {
     public static $CODIGOGRUPOSAG = 166;/**Codigo de grupo para produtos simples.SOLO APLICA PARA DISTRIVENUS**/
     public static $MAXPETICIONBACHTWOO = 98;/** Maximo de peticiones en bacht  por defecto en woocomerce **/
+    public static $NOMBREHOSTDETALLISTAS = 'DETALLISTAS';
+    public static $NOMBREHOSTMAYORISTAS = 'MAYORISTAS';
+    public static $NOMBREHOSTDISTRIBUIDORES= 'DISTRIBUIDORES';
+    public static $PRECIODETALLISTAS = 'n_valor_venta_normal';
+    public static $PRECIOMAYORISTAS = 'n_valor_venta_especial';
+    public static $PRECIODISTRIBUIDORES = 'n_valor_venta_promocion';
+
 
     public static $URLBASE = '/wp-json/wc/v3';
 
