@@ -16,7 +16,7 @@ class CargaArticulos extends Command
      *
      * @var string
      */
-    protected $signature = 'consumo:servicios';
+    protected $signature = 'consumo:servicios {host}';
 
     /**
      * The console command description.
@@ -34,7 +34,8 @@ class CargaArticulos extends Command
     public function __construct( ProductoController  $controllerProducto)
     {
          parent::__construct();
-        $this->pcontroller = $controllerProducto;
+        //$idhost = $this->argument('host');
+        //$this->pcontroller = $controllerProducto;
     }
 
     /**
@@ -50,7 +51,8 @@ class CargaArticulos extends Command
        // dd($result);
 
        // $this->pcontroller->CrearProductosWoo();
-
+        $this->pcontroller = new ProductoController();
+        $idhost = $this->argument('host');
         $this->pcontroller->ActualizarInventarioProductosWoo();
 
 

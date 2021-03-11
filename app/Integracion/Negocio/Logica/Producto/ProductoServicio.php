@@ -20,16 +20,16 @@ class ProductoServicio
     public $clienteServicioWoo;
     public $clienteServicioSag;
 
-   /** public function __construct(ServiceClientSag $clienteServicioSag,ServiceClientWoo $clienteServicioWoo){
+  public function __construct(ServiceClientSag $clienteServicioSag,ServiceClientWoo $clienteServicioWoo){
         $this->clienteServicioWoo = $clienteServicioWoo;
         $this->clienteServicioSag = $clienteServicioSag;
-    }**/
+    }
 
-    public function __construct(ServiceClientSag $clienteServicioSag){
-        $this->clienteServicioWoo = new ServiceClientWoo(env('HOST_DETALLISTAS'),
+ /* public function __construct(ServiceClientSag $clienteServicioSag){
+        $this->clienteServicioWoo = new ServiceClientWoo('https://detallistas.distrivenus.com/',
             env('CLAVE_CLIENTE_DETALLISTAS'),env('CLAVE_SECRETA_DETALLISTAS'));
         $this->clienteServicioSag = $clienteServicioSag;
-    }
+    }*/
 
     public function CargaInicialWoo(){
         $result  = $this->ConsultarProductosSAG();
@@ -45,20 +45,20 @@ class ProductoServicio
 
 
     public  function  ActualizarProductosWoo($fecha){
-        $listProductosSag  = $this->ConsultarProductosSAG($fecha);
+
+        $listProductosSag  = collect($this->ConsultarProductosSAG($fecha));
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
 
-        $listProductosVariablesWoo = $listProductosWoo->where('type','=','variable');
-        $listProductosSimpleWoo = $listProductosWoo->where('type','=','simple');
+        $listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
+        $listProductosSimpleWoo = $listProductosWoo->where(Constantes::$TYPE,'=','simple');
 
-        $listProductosSimplesSAG = $listProductosSag->where('ka_ni_grupo','=',166);
-        $listProducVariablesSAG = $listProductosSag->where('ka_ni_grupo','!=',166);
+        $listProductosSimplesSAG = $listProductosSag->where(Constantes::$KANIGRUPO,'=',Constantes::$CODIGOGRUPOSAG);
+        $listProducVariablesSAG = $listProductosSag->where(Constantes::$KANIGRUPO,'!=',Constantes::$CODIGOGRUPOSAG);
 
         $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
 
-
         foreach ($listProductosSimplesSAG as $productoSag){
-            $productoWoo =  $listProductosSimpleWoo->firstWhere('sku','=',$productoSag->k_sc_codigo_articulo);
+            $productoWoo =  $listProductosSimpleWoo->firstWhere(Constantes::$SKU,'=',$productoSag->k_sc_codigo_articulo);
             if(is_null($productoWoo)){
                 $this->CrearProductoWoo($productoSag);
             }else{
@@ -74,30 +74,31 @@ class ProductoServicio
                         ]
                     ]
                 ];
-                $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/'.$productoWoo['id'],$formParams);
+                $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$productoWoo['id'],$formParams);
             }
         }
 
         foreach ($listProducVariablesSAG as $productovariableSag){
-           $productoWoo =  $listProductosVariablesWoo->firstWhere('name','=',$productovariableSag->sc_descripcion_referente)
-                                                        ->AndWhere('sku', '=',' ');
-
+           $productoWoo =  $listProductosVariablesWoo->where('name','=',$productovariableSag->ss_descripcion_referente)
+                                                        ->where(Constantes::$SKU, '=','')->first();
             if(is_null($productoWoo)){
-
-                $this->CrearProductoVariableWoo($productovariableSag);
+                $productoVariableWoo = $this->CrearProductoVariableWoo($productovariableSag);
+                $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag,$productoVariableWoo['id']);
+                $listProductosVariablesWoo->push($productoVariableWoo);
+                $listaVariacionesProductosWoo->push($variacionProducto);
             }
             else {
-                $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere('sku', '=', $productovariableSag->k_sc_codigo_articulo);
+                $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
 
                 if (is_null($productoWooVariacion)) {
-                    $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id']);
-                } else {
-
+                    $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id']);
+                    $listaVariacionesProductosWoo->push($variacionProducto);
+                }
+                else
+                {
                     $formParams = ['name' => $productovariableSag->sc_detalle_articulo,
-                        'description' => $productovariableSag->sv_obs_articulo
-
-                    ];
-                    $this->clienteServicioWoo->Put('/wp-json/wc/v3/products/' . $productoWoo['id'].'/variations/'.$productoWooVariacion['id'], $formParams);
+                                    'description' => $productovariableSag->sv_obs_articulo];
+                    $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'. $productoWoo['id'].'/variations/'.$productoWooVariacion['id'], $formParams);
 
                 }
             }
@@ -110,11 +111,11 @@ class ProductoServicio
 
         $result  = collect($this->ConsultarInventarioProductosSAG($periodo));
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
-        $listProductosVariablesWoo = $listProductosWoo->where('type','=','variable');
-        $listProductosSimpleWoo = $listProductosWoo->where('type','=','simple');
+        $listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
+        $listProductosSimpleWoo = $listProductosWoo->where(Constantes::$TYPE,'=','simple');
 
-        $listProductosSimplesSAG = $result->where('ka_ni_grupo','=',Constantes::$CODIGOGRUPOSAG);
-        $listProducVariablesSAG = $result->where('ka_ni_grupo','!=',Constantes::$CODIGOGRUPOSAG);
+        $listProductosSimplesSAG = $result->where(Constantes::$KANIGRUPO,'=',Constantes::$CODIGOGRUPOSAG);
+        $listProducVariablesSAG = $result->where(Constantes::$KANIGRUPO,'!=',Constantes::$CODIGOGRUPOSAG);
 
         $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
 
@@ -230,33 +231,31 @@ class ProductoServicio
     public  function CrearProductoVariacionWoo($productoSag,$id){
 
         $data = [
-
             'regular_price' => $productoSag->n_valor_venta_normal,
             "sku" => $productoSag->k_sc_codigo_articulo,
             'manage_stock' => true,
             'attributes' => [
-                [
                     [
-                        'id' => 9,
-                        'options' => $productoSag->Talla
+                        'id' => 1,
+                         'name' => 'talla',
+                         'option' => $productoSag->Talla,
                     ]
-                ]
             ]
         ];
-        $result = $this->clienteServicioWoo->post('products/'.$id.'/variations', $data);
+        $result = $this->clienteServicioWoo->post(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$id.'/variations', $data);
         return $result;
     }
 
     public  function CrearProductoVariableWoo($productoSag){
         $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
         $formaParams = [
-            'name' => $productoSag->sc_descripcion_referente,
+            'name' => $productoSag->ss_descripcion_referente,
             'type' => 'variable',
             'regular_price' => $productoSag->n_valor_venta_normal,
             'description' => $productoSag->sv_obs_articulo,
             'short_description' => $productoSag->sv_obs_articulo,
-            "sku" => ' ',
-            'manage_stock' => true,
+            "sku" => '',
+            'manage_stock' => false,
             'categories' => [
                 [
                     'id'=> $productoSag->ka_ni_grupo
@@ -268,25 +267,20 @@ class ProductoServicio
                     // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
                     //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
                 ]
-            ]
-            ,
+            ],
             'attributes' => [
                 [
-                    [
-                        'name' => 'Size',
-                        'position' => 0,
-                        'visible' => true,
-                        'variation' => true,
-                        //'options' => [
-                        //    '33',
-                        //    '34'
-                        //]
-                    ]
+                    'id' => 1,
+                    'name' => 'talla',
+                    'position' => 0,
+                    'visible' => true,
+                    'variation' => true,
+                    'options' => ['21','22','23','24','25','26','27','28','29','30','31','32','33','34',
+                                    '35','36','37','38','39','40','41','42','43','44','45','46','47','48']
                 ]
             ]
         ];
-        $result = $this->clienteServicioWoo->Post('/wp-json/wc/v3/products',$formaParams);
-        $this->CrearProductoVariacionWoo($productoSag,$result['id']);
+        $result = $this->clienteServicioWoo->Post(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS,$formaParams);
         return $result;
     }
 
@@ -332,7 +326,7 @@ class ProductoServicio
     }
 
     public function ObtenerNombreImagen($direccionLogo){
-        $nomreImagen = 'no-img.png';
+        $nomreImagen = 'no-img.jpg';
         if($direccionLogo != null  && $direccionLogo !="")
         {
             $partesRuta= collect(explode("\\",$direccionLogo));

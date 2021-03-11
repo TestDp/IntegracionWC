@@ -25,4 +25,10 @@ class Constantes
 
     /**Campos SAG*/
     public static $SKU = 'sku';
+    public static $KANIGRUPO = 'ka_ni_grupo';
+
+    /**Campos woocomerce*/
+    public static $TYPE = 'type';
+
+
 }
