@@ -133,8 +133,9 @@ class ProductoServicio
         foreach ($listProductosWooVariables as $productoWoo){
             $listTem =  $this->clienteServicioWoo
                 ->Get(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$productoWoo['id'].
-                    Constantes::$ENDPOINTVARIACIONES);
+                    Constantes::$ENDPOINTVARIACIONES.'?per_page=100');
             $listaVariacionesWoo= array_merge($listaVariacionesWoo,$listTem);
+            //        $result =  $this->clienteServicioWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'?per_page='.$cantResgiXpagina.'&&page='.$nroPagina);
         }
         return collect($listaVariacionesWoo);
     }
@@ -304,7 +305,8 @@ class ProductoServicio
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal , a.n_valor_venta_especial,a.n_valor_venta_promocion ,s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
+        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal , a.n_valor_venta_especial,
+                                      a.n_valor_venta_promocion ,s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
                                      from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
                                      on s.ka_nl_bodega = b.ka_nl_bodega
