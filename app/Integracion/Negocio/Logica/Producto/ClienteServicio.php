@@ -55,7 +55,7 @@ class ClienteServicio
 
         $actividadComercial = $doc -> createElement ( "actividadComercial" );
         $actividadComercial = $cliente -> appendChild ( $actividadComercial );
-        $textId = $doc -> createTextNode ( "COMERCIANTE" );
+        $textId = $doc -> createTextNode ( "OTROS" );
         $textId = $actividadComercial -> appendChild ( $textId );
 
         $codigoDaneCiudad = $doc -> createElement ( "codigoDaneCiudad" );

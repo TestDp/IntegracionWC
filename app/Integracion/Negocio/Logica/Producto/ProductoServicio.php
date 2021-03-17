@@ -295,7 +295,7 @@ class ProductoServicio
 
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select  sc_detalle_articulo, n_valor_venta_normal,sv_obs_articulo, ss_descripcion_referente,
+        GetConsultaSagJson("select  sc_detalle_articulo,  nd_precio6 as precioDistribuidor, nd_precio7 as precioMayorista, nd_precio8 as precioDetallista,sv_obs_articulo, ss_descripcion_referente,
                             substring(sc_detalle_articulo, (len(sc_detalle_articulo)-1), len(sc_detalle_articulo)) as Talla, sv_obs_articulo,
                             k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo , ka_ni_grupo
                             from articulos WITH(NOLOCK)
@@ -305,8 +305,8 @@ class ProductoServicio
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select a.k_sc_codigo_articulo, a.n_valor_venta_normal , a.n_valor_venta_especial,
-                                      a.n_valor_venta_promocion ,s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
+        GetConsultaSagJson("select a.k_sc_codigo_articulo,   a.nd_precio6 as precioDistribuidor, a.nd_precio7 as precioMayorista, a.nd_precio8 as precioDetallista,
+                            s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
                                      from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
                                      on s.ka_nl_bodega = b.ka_nl_bodega
