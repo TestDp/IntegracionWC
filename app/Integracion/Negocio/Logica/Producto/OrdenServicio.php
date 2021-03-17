@@ -55,7 +55,7 @@ class OrdenServicio
         $movimiento->setAttribute("movimientoId", 1);
         $movimiento->setAttribute("n_numero_documento", "0");//se envia cero
         $movimiento->setAttribute("num_doc", $ordenWoo->id);
-        $movimiento->setAttribute("fuente", "PC");//se envia como CT . COtizacion o PC : PEDIDOS CLIENTES
+        $movimiento->setAttribute("fuente", "PD");//PD : PEDIDOS MEDELLIN temporal mientras que se crea PW
         $movimiento->setAttribute("nit", $clienteWoo->s_identificador);
         $movimiento->setAttribute("fecha", $fechas[0]);
         $movimiento->setAttribute("d_fecha_documento", $fechas[0]);

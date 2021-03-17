@@ -60,7 +60,7 @@ class ClienteServicio
 
         $codigoDaneCiudad = $doc -> createElement ( "codigoDaneCiudad" );
         $codigoDaneCiudad = $cliente -> appendChild ( $codigoDaneCiudad );
-        $textcodigoDaneCiudad = $doc -> createTextNode ( "05440" );
+        $textcodigoDaneCiudad = $doc -> createTextNode ( "05631" );
         $textcodigoDaneCiudad = $codigoDaneCiudad -> appendChild ( $textcodigoDaneCiudad );
 
         $naturaleza = $doc -> createElement ( "naturaleza" );
