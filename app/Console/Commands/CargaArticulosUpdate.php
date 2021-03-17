@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\ProductoController;
+use App\Integracion\Comunes\Constantes;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class CargaArticulosUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'consumo:articulos';
+    protected $signature = 'consumo:articulos {host}';
 
     /**
      * The console command description.
@@ -44,13 +45,32 @@ class CargaArticulosUpdate extends Command
      */
     public function handle()
     {
-       // $url = 'http://pyaws.pya.com.co/ServiceSagWeb.svc?singleWsdl';
-      //  $client  =  new SoapClient($url);
-      //  $result = $client->consultaSagJson(['a_s_token'=>'L44rEt98Hj09','a_s_consulta'=>'select * from articulos where sc_tienda_virtual = \'S\'']);
-       // dd($result);
-
-       // $this->pcontroller->CrearProductosWoo();
-        $this->pcontroller->ActualizarProductosWoo();
+        $nombreHost = $this->argument('host');
+        switch ($nombreHost){
+            case Constantes::$NOMBREHOSTDETALLISTAS:
+                $baseUrl = env('HOST_DETALLISTAS');
+                $claveClienteWoo = env('CLAVE_CLIENTE_DETALLISTAS');
+                $claveSecretaWoo = env('CLAVE_SECRETA_DETALLISTAS');
+                $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
+                $this->pcontroller->ActualizarProductosWoo(Constantes::$PRECIODETALLISTAS);
+                break;
+            case Constantes::$NOMBREHOSTMAYORISTAS:
+                $baseUrl = env('HOST_MAYORISTAS');
+                $claveClienteWoo = env('CLAVE_CLIENTE_MAYORISTAS');
+                $claveSecretaWoo = env('CLAVE_SECRETA_MAYORISTAS');
+                $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
+                $this->pcontroller->ActualizarProductosWoo(Constantes::$NOMBREHOSTMAYORISTAS);
+                break;
+            case Constantes::$NOMBREHOSTDISTRIBUIDORES:
+                $baseUrl = env('HOST_DISTRIBUIDORES');
+                $claveClienteWoo = env('CLAVE_CLIENTE_DISTRIBUIDORES');
+                $claveSecretaWoo = env('CLAVE_SECRETA_DISTRIBUIDORES');
+                $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
+                $this->pcontroller->ActualizarProductosWoo(Constantes::$PRECIODISTRIBUIDORES);
+                break;
+            default:
+                $this->info('comando no valido');
+        }
 
 
 

@@ -16,9 +16,9 @@ class Constantes
     public static $NOMBREHOSTDETALLISTAS = 'DETALLISTAS';
     public static $NOMBREHOSTMAYORISTAS = 'MAYORISTAS';
     public static $NOMBREHOSTDISTRIBUIDORES= 'DISTRIBUIDORES';
-    public static $PRECIODETALLISTAS = 'n_valor_venta_normal';
-    public static $PRECIOMAYORISTAS = 'n_valor_venta_especial';
-    public static $PRECIODISTRIBUIDORES = 'n_valor_venta_promocion';
+    public static $PRECIODETALLISTAS = 'nd_precio8';
+    public static $PRECIOMAYORISTAS = 'nd_precio7';
+    public static $PRECIODISTRIBUIDORES = 'nd_precio6';
 
 
     public static $URLBASE = '/wp-json/wc/v3';

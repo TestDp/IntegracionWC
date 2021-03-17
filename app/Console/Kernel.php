@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Integracion\Comunes\Constantes;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -27,11 +28,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->daily();
-       // $schedule->command('consumo:servicios')->hourly();
-        $schedule->command('consumo:servicios')->everyThirtyMinutes();
+        $schedule->command('consumo:servicios'.Constantes::$NOMBREHOSTDETALLISTAS)->everyThirtyMinutes();
         $schedule->command('consumo:ordenes')->hourly();
-        $schedule->command('consumo:articulos')->hourly();
+        $schedule->command('consumo:articulos'.Constantes::$NOMBREHOSTDETALLISTAS)->hourly();
+
+        $schedule->command('consumo:servicios'. Constantes::$NOMBREHOSTMAYORISTAS)->everyThirtyMinutes();
+        $schedule->command('consumo:articulos'.Constantes::$NOMBREHOSTMAYORISTAS)->hourly();
+
+        $schedule->command('consumo:servicios'. Constantes::$NOMBREHOSTDISTRIBUIDORES)->everyThirtyMinutes();
+        $schedule->command('consumo:articulos'.Constantes::$NOMBREHOSTDISTRIBUIDORES)->hourly();
+
     }
 
     /**

@@ -47,7 +47,7 @@ class ProductoServicio
     }
 
 
-    public  function  ActualizarProductosWoo($fecha){
+    public  function  ActualizarProductosWoo($fecha,$tipoPrecio){
 
         $listProductosSag  = collect($this->ConsultarProductosSAG($fecha));
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
@@ -63,7 +63,7 @@ class ProductoServicio
         foreach ($listProductosSimplesSAG as $productoSag){
             $productoWoo =  $listProductosSimpleWoo->firstWhere(Constantes::$SKU,'=',$productoSag->k_sc_codigo_articulo);
             if(is_null($productoWoo)){
-                $this->CrearProductoWoo($productoSag);
+                $this->CrearProductoWoo($productoSag,$tipoPrecio);
             }else{
                 $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
                 $formParams = ['name' => $productoSag->sc_detalle_articulo,
@@ -85,8 +85,8 @@ class ProductoServicio
            $productoWoo =  $listProductosVariablesWoo->where('name','=',$productovariableSag->ss_descripcion_referente)
                                                         ->where(Constantes::$SKU, '=','')->first();
             if(is_null($productoWoo)){
-                $productoVariableWoo = $this->CrearProductoVariableWoo($productovariableSag);
-                $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag,$productoVariableWoo['id']);
+                $productoVariableWoo = $this->CrearProductoVariableWoo($productovariableSag,$tipoPrecio);
+                $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag,$productoVariableWoo['id'],$tipoPrecio);
                 $listProductosVariablesWoo->push($productoVariableWoo);
                 $listaVariacionesProductosWoo->push($variacionProducto);
             }
@@ -94,7 +94,7 @@ class ProductoServicio
                 $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
 
                 if (is_null($productoWooVariacion)) {
-                    $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id']);
+                    $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id'],$tipoPrecio);
                     $listaVariacionesProductosWoo->push($variacionProducto);
                 }
                 else
@@ -135,7 +135,6 @@ class ProductoServicio
                 ->Get(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$productoWoo['id'].
                     Constantes::$ENDPOINTVARIACIONES.'?per_page=100');
             $listaVariacionesWoo= array_merge($listaVariacionesWoo,$listTem);
-            //        $result =  $this->clienteServicioWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'?per_page='.$cantResgiXpagina.'&&page='.$nroPagina);
         }
         return collect($listaVariacionesWoo);
     }
@@ -146,9 +145,9 @@ class ProductoServicio
     {
         $formParams = ['id'=>$idProductoWoo,
             'stock_quantity' => intval($productoSag->n_saldo_actual),
-            'regular_price' =>(Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->n_valor_venta_normal:
-                              (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->n_valor_venta_especial:
-                                  $productoSag->n_valor_venta_promocion];
+            'regular_price' =>(Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
+                              (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
+                                  $productoSag->precioDistribuidor];
         return $formParams;
     }
 
@@ -208,12 +207,14 @@ class ProductoServicio
         }
     }
 
-    public  function CrearProductoWoo($productoSag){
+    public  function CrearProductoWoo($productoSag,$tipoPrecio){
         $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
         $formaParams = [
             'name' => $productoSag->sc_detalle_articulo,
             'type' => 'simple',
-            'regular_price' => $productoSag->n_valor_venta_normal,
+            'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
+                               (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
+                                $productoSag->precioDistribuidor,
             'description' => $productoSag->sv_obs_articulo,
             'short_description' => $productoSag->sv_obs_articulo,
             "sku" => $productoSag->k_sc_codigo_articulo,
@@ -236,10 +237,12 @@ class ProductoServicio
     }
 
 
-    public  function CrearProductoVariacionWoo($productoSag,$id){
+    public  function CrearProductoVariacionWoo($productoSag,$id,$tipoPrecio){
 
         $data = [
-            'regular_price' => $productoSag->n_valor_venta_normal,
+            'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
+                (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
+                    $productoSag->precioDistribuidor,
             "sku" => $productoSag->k_sc_codigo_articulo,
             'manage_stock' => true,
             'attributes' => [
@@ -254,12 +257,14 @@ class ProductoServicio
         return $result;
     }
 
-    public  function CrearProductoVariableWoo($productoSag){
+    public  function CrearProductoVariableWoo($productoSag,$tipoPrecio){
         $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
         $formaParams = [
             'name' => $productoSag->ss_descripcion_referente,
             'type' => 'variable',
-            'regular_price' => $productoSag->n_valor_venta_normal,
+            'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
+                (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
+                    $productoSag->precioDistribuidor,
             'description' => $productoSag->sv_obs_articulo,
             'short_description' => $productoSag->sv_obs_articulo,
             "sku" => '',
@@ -295,7 +300,8 @@ class ProductoServicio
 
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select  sc_detalle_articulo,  nd_precio6 as precioDistribuidor, nd_precio7 as precioMayorista, nd_precio8 as precioDetallista,sv_obs_articulo, ss_descripcion_referente,
+        GetConsultaSagJson("select  sc_detalle_articulo,  nd_precio6 as precioDistribuidor,
+                                      nd_precio7 as precioMayorista, nd_precio8 as precioDetallista,sv_obs_articulo, ss_descripcion_referente,
                             substring(sc_detalle_articulo, (len(sc_detalle_articulo)-1), len(sc_detalle_articulo)) as Talla, sv_obs_articulo,
                             k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo , ka_ni_grupo
                             from articulos WITH(NOLOCK)
