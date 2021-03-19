@@ -71,9 +71,6 @@ class CargaArticulosUpdate extends Command
             default:
                 $this->info('comando no valido');
         }
-
-
-
         $this->info('Sec creo un producto con exito');
     }
 }

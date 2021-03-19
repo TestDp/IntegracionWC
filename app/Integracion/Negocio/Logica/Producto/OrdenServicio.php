@@ -25,6 +25,9 @@ class OrdenServicio
         $this->serviceClientSag = $serviceClientSag;
     }
 
+    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
+        $this->serviceClientWoo->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
+    }
     public function  ConsultarOrdenesWoo(){
         $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES);
         return $result;

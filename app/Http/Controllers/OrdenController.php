@@ -24,6 +24,10 @@ class OrdenController extends Controller
         $this->clienteController = $clienteController;
     }
 
+    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
+        $this->ordenServicio->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
+    }
+
     public function ConsultarOrdenesWoo(){
         $result =  $this->ordenServicio->ConsultarOrdenesWoo();
         dd($result);
