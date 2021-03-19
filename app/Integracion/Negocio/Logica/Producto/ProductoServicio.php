@@ -82,7 +82,9 @@ class ProductoServicio
         }
 
         foreach ($listProducVariablesSAG as $productovariableSag){
-           $productoWoo =  $listProductosVariablesWoo->where('name','=',$productovariableSag->ss_descripcion_referente)
+            
+            $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
+            $productoWoo =  $listProductosVariablesWoo->where('name','=',$productovariableSag->ss_descripcion_referente)
                                                         ->where(Constantes::$SKU, '=','')->first();
             if(is_null($productoWoo)){
                 $productoVariableWoo = $this->CrearProductoVariableWoo($productovariableSag,$tipoPrecio);
@@ -301,7 +303,7 @@ class ProductoServicio
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
         GetConsultaSagJson("select  sc_detalle_articulo,  nd_precio6 as precioDistribuidor,
-                                      nd_precio7 as precioMayorista, nd_precio8 as precioDetallista,sv_obs_articulo, ss_descripcion_referente,
+                                      n_valor_venta_especial as precioMayorista, nd_precio8 as precioDetallista,sv_obs_articulo, ss_descripcion_referente,
                             substring(sc_detalle_articulo, (len(sc_detalle_articulo)-1), len(sc_detalle_articulo)) as Talla, sv_obs_articulo,
                             k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo , ka_ni_grupo
                             from articulos WITH(NOLOCK)
@@ -311,7 +313,7 @@ class ProductoServicio
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select a.k_sc_codigo_articulo,   a.nd_precio6 as precioDistribuidor, a.nd_precio7 as precioMayorista, a.nd_precio8 as precioDetallista,
+        GetConsultaSagJson("select a.k_sc_codigo_articulo,   a.nd_precio6 as precioDistribuidor, a.n_valor_venta_especial as precioMayorista, a.nd_precio8 as precioDetallista,
                             s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
                                      from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
