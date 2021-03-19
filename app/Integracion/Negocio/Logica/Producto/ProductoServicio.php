@@ -82,10 +82,17 @@ class ProductoServicio
         }
 
         foreach ($listProducVariablesSAG as $productovariableSag){
-            
             $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
-            $productoWoo =  $listProductosVariablesWoo->where('name','=',$productovariableSag->ss_descripcion_referente)
-                                                        ->where(Constantes::$SKU, '=','')->first();
+            $productoWoo = null;
+            if(! is_null($productoWooVariacion)){
+                $idPadre =  $this->ObtenerIdPadre($productoWooVariacion['_links']['up'][0]['href']);
+                $productoWoo =  $listProductosVariablesWoo->where('id','=',$idPadre)
+                    ->where(Constantes::$SKU, '=','')->first();
+            }else{
+                $productoWoo =  $listProductosVariablesWoo->where('name','=',$productovariableSag->ss_descripcion_referente)
+                    ->where(Constantes::$SKU, '=','')->first();
+            }
+
             if(is_null($productoWoo)){
                 $productoVariableWoo = $this->CrearProductoVariableWoo($productovariableSag,$tipoPrecio);
                 $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag,$productoVariableWoo['id'],$tipoPrecio);
@@ -94,16 +101,16 @@ class ProductoServicio
             }
             else {
                 $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
-
                 if (is_null($productoWooVariacion)) {
                     $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id'],$tipoPrecio);
                     $listaVariacionesProductosWoo->push($variacionProducto);
                 }
                 else
                 {
-                    $formParams = ['name' => $productovariableSag->sc_detalle_articulo,
-                                    'description' => $productovariableSag->sv_obs_articulo];
-                    $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'. $productoWoo['id'].'/variations/'.$productoWooVariacion['id'], $formParams);
+                    //NO BORRAR
+                    //$formParams = ['name' => $productovariableSag->sc_detalle_articulo,
+                   //                 'description' => $productovariableSag->sv_obs_articulo];
+                   // $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'. $productoWoo['id'].'/variations/'.$productoWooVariacion['id'], $formParams);
 
                 }
             }
@@ -350,5 +357,11 @@ class ProductoServicio
             $nomreImagen = $partesRuta->last();
         }
         return $nomreImagen;
+    }
+
+    public function ObtenerIdPadre($direccionPadre){
+        $partesLink= collect(explode("/",$direccionPadre));
+        $idPadre = $partesLink->last();
+        return $idPadre;
     }
 }

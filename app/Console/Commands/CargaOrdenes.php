@@ -50,7 +50,7 @@ class CargaOrdenes  extends Command
         $baseUrl = env('HOST_DETALLISTAS');
         $claveClienteWoo = env('CLAVE_CLIENTE_DETALLISTAS');
         $claveSecretaWoo = env('CLAVE_SECRETA_DETALLISTAS');
-        $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
+        $this->ocontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
         $this->ocontroller->CrearOrdenesSagDesdeWoo();
         $this->info('Sec crearon las ordenes de la ultima hora ');
     }

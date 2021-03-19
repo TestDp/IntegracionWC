@@ -17,7 +17,7 @@ class Constantes
     public static $NOMBREHOSTMAYORISTAS = 'MAYORISTAS';
     public static $NOMBREHOSTDISTRIBUIDORES= 'DISTRIBUIDORES';
     public static $PRECIODETALLISTAS = 'nd_precio8';
-    public static $PRECIOMAYORISTAS = 'nd_precio7';
+    public static $PRECIOMAYORISTAS = 'n_valor_venta_especial';
     public static $PRECIODISTRIBUIDORES = 'nd_precio6';
 
 
