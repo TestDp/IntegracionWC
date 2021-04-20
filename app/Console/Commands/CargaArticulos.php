@@ -46,7 +46,7 @@ class CargaArticulos extends Command
     public function handle()
     {
        $nombreHost = $this->argument('host');
-       switch ($nombreHost){
+      switch ($nombreHost){
            case Constantes::$NOMBREHOSTDETALLISTAS:
                    $baseUrl = env('HOST_DETALLISTAS');
                    $claveClienteWoo = env('CLAVE_CLIENTE_DETALLISTAS');
