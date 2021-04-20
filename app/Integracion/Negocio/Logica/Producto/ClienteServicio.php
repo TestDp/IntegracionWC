@@ -24,6 +24,9 @@ class ClienteServicio
         $this->clienteServicioSag = $clienteServicioSag;
     }
 
+    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
+        $this->clienteServicioWoo->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
+    }
     public  function  ConsultarClientesWoo(){
        $result =  $this->clienteServicioWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTCLIENTES);
         return $result;

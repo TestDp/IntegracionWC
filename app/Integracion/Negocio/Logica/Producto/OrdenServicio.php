@@ -33,7 +33,7 @@ class OrdenServicio
         return $result;
     }
     public function  ConsultarOrdenesWooByDate($fecha){
-        $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES.'.?after='.$fecha);
+        $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES.'?after='.$fecha);
         return $result;
     }
 
@@ -58,12 +58,12 @@ class OrdenServicio
         $movimiento->setAttribute("movimientoId", 1);
         $movimiento->setAttribute("n_numero_documento", "0");//se envia cero
         $movimiento->setAttribute("num_doc", $ordenWoo->id);
-        $movimiento->setAttribute("fuente", "PD");//PD : PEDIDOS MEDELLIN temporal mientras que se crea PW
+        $movimiento->setAttribute("fuente", "PW");//PD : PEDIDOS MEDELLIN temporal mientras que se crea PW
         $movimiento->setAttribute("nit", $clienteWoo->s_identificador);
         $movimiento->setAttribute("fecha", $fechas[0]);
         $movimiento->setAttribute("d_fecha_documento", $fechas[0]);
-        $movimiento->setAttribute("vendedor","1038408871");
-        $movimiento->setAttribute("usuario", "SANDRA");
+        $movimiento->setAttribute("vendedor","222222228");
+        $movimiento->setAttribute("usuario", "VENTAS POR INTERNET");
         $movimiento->setAttribute("RealizarCommit", "S");
         //aca iria un ciclo segun las diferentes skus de la orden
         $ind =1;
