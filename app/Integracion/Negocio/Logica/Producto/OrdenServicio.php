@@ -33,7 +33,7 @@ class OrdenServicio
         return $result;
     }
     public function  ConsultarOrdenesWooByDate($fecha){
-        $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES.'.?after='.$fecha);
+        $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES.'?after='.$fecha);
         return $result;
     }
 

@@ -16,6 +16,14 @@ class ClienteController extends COntroller
 
     public function __construct(ClienteServicio $clienteServicio){
         $this->clienteServicio = $clienteServicio;
+        $baseUrl = env('HOST_DETALLISTAS');
+        $claveClienteWoo = env('CLAVE_CLIENTE_DETALLISTAS');
+        $claveSecretaWoo = env('CLAVE_SECRETA_DETALLISTAS');
+        $this->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
+    }
+
+    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
+        $this->clienteServicio->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
     }
 
     public  function  ConsultarClientesWoo(){
