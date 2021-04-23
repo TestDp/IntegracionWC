@@ -309,25 +309,42 @@ class ProductoServicio
 
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select  sc_detalle_articulo,  nd_precio6 as precioDistribuidor,
-                                      n_valor_venta_especial as precioMayorista, nd_precio8 as precioDetallista,sv_obs_articulo, ss_descripcion_referente,
-                            substring(sc_detalle_articulo, (len(sc_detalle_articulo)-1), len(sc_detalle_articulo)) as Talla, sv_obs_articulo,
-                            k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo , ka_ni_grupo
-                            from articulos WITH(NOLOCK)
-                            where sc_tienda_virtual = 'S' and dd_fecha_ult_modificacion > "."'". $fecha."'");
+        GetConsultaSagJson("SELECT sc_detalle_articulo, nd_precio4 as precioDistribuidor,n_valor_venta_especial as precioMayorista,
+                            nd_precio8 as precioDetallista,sv_obs_articulo, a.sc_referencia AS ss_descripcion_referente,sv_obs_articulo,
+                            cb.ss_codigo_barras AS k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo,ka_ni_grupo,  t.ss_talla as talla,  
+                            c.ss_color as codigo_color,  c.ss_color_largo as descripcion_color
+                            FROM articulos a With(NoLock) 
+                            INNER JOIN sta_sku k With(NoLock) 
+                            ON a.ka_nl_articulo = k.ka_nl_articulo
+                            INNER JOIN sta_tallas t With(NoLock) 
+                            ON k.ka_nl_talla = t.ka_nl_talla  
+                            INNER JOIN sta_colores c With(NoLock) 
+                            ON k.ka_nl_color = c.ka_nl_color  
+                            INNER JOIN art_cod_barras cb 
+                            ON a.ka_nl_articulo = cb.ka_nl_articulo and c.ka_nl_color = cb.ka_nl_color AND cb.ka_nl_talla = t.ka_nl_talla  
+                            WHERE a.sc_tienda_virtual = 'S' and
+                            a.dd_fecha_ult_modificacion >"."'". $fecha."'");
         return $result;
     }
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("select a.k_sc_codigo_articulo,   a.nd_precio6 as precioDistribuidor, a.n_valor_venta_especial as precioMayorista, a.nd_precio8 as precioDetallista,
-                            s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
-                                     from saldos_articulos as s WITH(NOLOCK)
-                                     inner join bodegas as b
-                                     on s.ka_nl_bodega = b.ka_nl_bodega
-                                     inner join articulos as a
-                                     on s.ka_nl_articulo = a.ka_nl_articulo
-                                     where b.ka_nl_bodega = 1 and a.sc_tienda_virtual = 'S' and k_sc_periodo =".$periodo);
+        GetConsultaSagJson("SELECT cb.ss_codigo_barras as k_sc_codigo_articulo, a.sc_referencia, 
+                             a.nd_precio4 as precioDistribuidor,  a.n_valor_venta_especial as precioMayorista,  
+                            a.nd_precio8 as precioDetallista,  s.ss_talla as talla,  c.ss_color as codigo_color,
+                            c.ss_color_largo as descripcion_color,  s.nd_cantidad as saldo_actual,  a.ka_ni_grupo, a.sc_referencia as ss_descripcion_referente
+                            FROM saldos_articulos_bin s  With(NoLock) 
+                            INNER JOIN articulos a With(NoLock) ON 
+                            s.ka_nl_articulo = a.ka_nl_articulo
+                            INNER JOIN sta_colores c With(Nolock) 
+                            ON s.ss_color = c.ss_color
+                            INNER JOIN art_cod_barras cb 
+                            ON a.ka_nl_articulo = cb.ka_nl_articulo and c.ka_nl_color = cb.ka_nl_color
+                            INNER JOIN sta_tallas t With(NoLock) 
+                            ON cb.ka_nl_talla = t.ka_nl_talla  
+                            WHERE a.sc_tienda_virtual = 'S' AND 
+                            s.ka_nl_bodega = 1 AND 
+                            s.nd_cantidad > 0  AND s.ss_periodo = ".$periodo);
         return $result;
     }
 
