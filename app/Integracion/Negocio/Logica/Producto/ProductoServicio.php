@@ -332,7 +332,7 @@ class ProductoServicio
         GetConsultaSagJson("SELECT cb.ss_codigo_barras as k_sc_codigo_articulo, a.sc_referencia, 
                              a.nd_valor_venta4 as precioDistribuidor,  a.n_valor_venta_especial as precioMayorista,  
                             a.nd_precio8 as precioDetallista,  s.ss_talla as talla,  c.ss_color as codigo_color,
-                            c.ss_color_largo as descripcion_color,  s.nd_cantidad as saldo_actual,  a.ka_ni_grupo, a.sc_referencia as ss_descripcion_referente
+                            c.ss_color_largo as descripcion_color,  s.nd_cantidad as n_saldo_actual,  a.ka_ni_grupo, a.sc_referencia as ss_descripcion_referente
                             FROM saldos_articulos_bin s  With(NoLock) 
                             INNER JOIN articulos a With(NoLock) ON 
                             s.ka_nl_articulo = a.ka_nl_articulo
