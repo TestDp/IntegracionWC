@@ -309,7 +309,7 @@ class ProductoServicio
 
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("SELECT sc_detalle_articulo, nd_precio4 as precioDistribuidor,n_valor_venta_especial as precioMayorista,
+        GetConsultaSagJson("SELECT a.ss_detalle_artic2 as sc_detalle_articulo, nd_valor_venta4 as precioDistribuidor,n_valor_venta_especial as precioMayorista,
                             nd_precio8 as precioDetallista,sv_obs_articulo, a.sc_referencia AS ss_descripcion_referente,sv_obs_articulo,
                             cb.ss_codigo_barras AS k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo,ka_ni_grupo,  t.ss_talla as talla,  
                             c.ss_color as codigo_color,  c.ss_color_largo as descripcion_color
@@ -330,7 +330,7 @@ class ProductoServicio
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
         GetConsultaSagJson("SELECT cb.ss_codigo_barras as k_sc_codigo_articulo, a.sc_referencia, 
-                             a.nd_precio4 as precioDistribuidor,  a.n_valor_venta_especial as precioMayorista,  
+                             a.nd_valor_venta4 as precioDistribuidor,  a.n_valor_venta_especial as precioMayorista,  
                             a.nd_precio8 as precioDetallista,  s.ss_talla as talla,  c.ss_color as codigo_color,
                             c.ss_color_largo as descripcion_color,  s.nd_cantidad as saldo_actual,  a.ka_ni_grupo, a.sc_referencia as ss_descripcion_referente
                             FROM saldos_articulos_bin s  With(NoLock) 
