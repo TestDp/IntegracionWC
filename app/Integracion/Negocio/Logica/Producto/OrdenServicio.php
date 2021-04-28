@@ -62,8 +62,8 @@ class OrdenServicio
         $movimiento->setAttribute("nit", $clienteWoo->s_identificador);
         $movimiento->setAttribute("fecha", $fechas[0]);
         $movimiento->setAttribute("d_fecha_documento", $fechas[0]);
-        $movimiento->setAttribute("vendedor","222222228");
-        $movimiento->setAttribute("usuario", "VENTAS POR INTERNET");
+        $movimiento->setAttribute("vendedor","1037591898");
+        $movimiento->setAttribute("usuario", "ALEXA");
         $movimiento->setAttribute("RealizarCommit", "S");
         //aca iria un ciclo segun las diferentes skus de la orden
         $ind =1;
@@ -81,7 +81,7 @@ class OrdenServicio
             $movimientoDetalle->setAttribute("iva", "19");
             $movimientoDetalle->setAttribute("descuento", "0");
             $movimientoDetalle->setAttribute("descuento2", "0");
-            $movimientoDetalle->setAttribute("bodega", "RN1");
+            $movimientoDetalle->setAttribute("bodega", "01");
             $ind = $ind + 1;
         }
         $movimientosOtrosDatos= $doc -> createElement ( "movimientosOtrosDatos" );

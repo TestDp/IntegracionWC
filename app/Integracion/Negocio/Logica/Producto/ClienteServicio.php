@@ -58,12 +58,12 @@ class ClienteServicio
 
         $actividadComercial = $doc -> createElement ( "actividadComercial" );
         $actividadComercial = $cliente -> appendChild ( $actividadComercial );
-        $textId = $doc -> createTextNode ( "OTROS" );
+        $textId = $doc -> createTextNode ( "05-VENTA ONLINE" );
         $textId = $actividadComercial -> appendChild ( $textId );
 
         $codigoDaneCiudad = $doc -> createElement ( "codigoDaneCiudad" );
         $codigoDaneCiudad = $cliente -> appendChild ( $codigoDaneCiudad );
-        $textcodigoDaneCiudad = $doc -> createTextNode ( "05631" );
+        $textcodigoDaneCiudad = $doc -> createTextNode ( "000000" );
         $textcodigoDaneCiudad = $codigoDaneCiudad -> appendChild ( $textcodigoDaneCiudad );
 
         $naturaleza = $doc -> createElement ( "naturaleza" );
@@ -153,7 +153,7 @@ class ClienteServicio
         //siempre es MINORISTA por ser persona natural
         $tipoCliente = $doc -> createElement ( "tipoCliente" );
         $tipoCliente = $cliente -> appendChild ( $tipoCliente );
-        $texttipoCliente = $doc -> createTextNode ( "OTROS" );
+        $texttipoCliente = $doc -> createTextNode ( "V" );
         $texttipoCliente = $tipoCliente -> appendChild ( $texttipoCliente );
 
         //siempre es 0 numeric
@@ -183,7 +183,7 @@ class ClienteServicio
         //siempre es 1 segun las reglas de negocio de la ramada precio 1 string
         $precioVenta = $doc -> createElement ( "precioVenta" );
         $precioVenta = $cliente -> appendChild ( $precioVenta );
-        $textprecioVenta = $doc -> createTextNode ( "1" );
+        $textprecioVenta = $doc -> createTextNode ( "4" );
         $textprecioVenta = $precioVenta -> appendChild ( $textprecioVenta );
 
         //siempre es 999999999 numerico
