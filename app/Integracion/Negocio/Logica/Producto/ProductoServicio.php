@@ -25,15 +25,6 @@ class ProductoServicio
         $this->clienteServicioSag = $clienteServicioSag;
     }
 
-    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
-        $this->clienteServicioWoo->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
-    }
- /* public function __construct(ServiceClientSag $clienteServicioSag){
-        $this->clienteServicioWoo = new ServiceClientWoo('https://detallistas.distrivenus.com/',
-            env('CLAVE_CLIENTE_DETALLISTAS'),env('CLAVE_SECRETA_DETALLISTAS'));
-        $this->clienteServicioSag = $clienteServicioSag;
-    }*/
-
     public function CargaInicialWoo(){
         $result  = $this->ConsultarProductosSAG();
         foreach ($result as $productoSag){
@@ -47,70 +38,39 @@ class ProductoServicio
     }
 
 
-    public  function  ActualizarProductosWoo($fecha,$tipoPrecio){
-
+    public  function  ActualizarProductosWoo($fecha){
         $listProductosSag  = collect($this->ConsultarProductosSAG($fecha));
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
-
         $listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
-        $listProductosSimpleWoo = $listProductosWoo->where(Constantes::$TYPE,'=','simple');
-
-        $listProductosSimplesSAG = $listProductosSag->where(Constantes::$KANIGRUPO,'=',Constantes::$CODIGOGRUPOSAG);
-        $listProducVariablesSAG = $listProductosSag->where(Constantes::$KANIGRUPO,'!=',Constantes::$CODIGOGRUPOSAG);
-
         $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
-
-        foreach ($listProductosSimplesSAG as $productoSag){
-            $productoWoo =  $listProductosSimpleWoo->firstWhere(Constantes::$SKU,'=',$productoSag->k_sc_codigo_articulo);
-            if(is_null($productoWoo)){
-                $this->CrearProductoWoo($productoSag,$tipoPrecio);
-            }else{
-                $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
-                $formParams = ['name' => $productoSag->sc_detalle_articulo,
-                    'description' => $productoSag->sv_obs_articulo,
-                    'images' => [
-                        [
-                            'id'=>$productoWoo['images'][0]['id'],
-                            'src' => env('RUTAIMAGENES').$nomreImagen
-                            // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
-                            //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
-                        ]
-                    ]
-                ];
-                $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$productoWoo['id'],$formParams);
-            }
-        }
-
-        foreach ($listProducVariablesSAG as $productovariableSag){
+        foreach ($listProductosSag as $productovariableSag){
             $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
             $productoWoo = null;
             if(! is_null($productoWooVariacion)){
                 $idPadre =  $this->ObtenerIdPadre($productoWooVariacion['_links']['up'][0]['href']);
-                $productoWoo =  $listProductosVariablesWoo->where('id','=',$idPadre)
-                    ->where(Constantes::$SKU, '=','')->first();
+                $productoWoo =  $listProductosVariablesWoo->where('id','=',$idPadre)->first();
             }else{
-                $productoWoo =  $listProductosVariablesWoo->where('name','=',$productovariableSag->ss_descripcion_referente)
-                    ->where(Constantes::$SKU, '=','')->first();
+                $productoWoo =  $listProductosVariablesWoo->where(Constantes::$SKU,'=',$productovariableSag->ss_descripcion_referente)->first();
             }
 
             if(is_null($productoWoo)){
-                $productoVariableWoo = $this->CrearProductoVariableWoo($productovariableSag,$tipoPrecio);
-                $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag,$productoVariableWoo['id'],$tipoPrecio);
+                $productoVariableWoo = $this->CrearProductoVariableWoo($productovariableSag);
+                $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag,$productoVariableWoo['id']);
                 $listProductosVariablesWoo->push($productoVariableWoo);
                 $listaVariacionesProductosWoo->push($variacionProducto);
             }
             else {
                 $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
                 if (is_null($productoWooVariacion)) {
-                    $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id'],$tipoPrecio);
+                    $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id']);
                     $listaVariacionesProductosWoo->push($variacionProducto);
                 }
                 else
                 {
-                    //NO BORRAR
-                    //$formParams = ['name' => $productovariableSag->sc_detalle_articulo,
-                   //                 'description' => $productovariableSag->sv_obs_articulo];
-                   // $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'. $productoWoo['id'].'/variations/'.$productoWooVariacion['id'], $formParams);
+                    $formParams = ['name' => $productovariableSag->sc_detalle_articulo,
+                                   'description' => $productovariableSag->sv_obs_articulo,
+                                 'purchase_note'=>$productovariableSag->codigo_articulo_principal];
+                   $result = $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'. $productoWoo['id'], $formParams);
 
                 }
             }
@@ -119,21 +79,14 @@ class ProductoServicio
         return "success";
     }
 
-    public  function  ActualizarInventarioProductosWoo($periodo,$tipoPrecio){
-
-        $result  = collect($this->ConsultarInventarioProductosSAG($periodo));
+    public  function  ActualizarInventarioProductosWoo($periodo)
+    {
+        $inventarioProductosSAG  = collect($this->ConsultarInventarioProductosSAG($periodo));
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         $listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
-        $listProductosSimpleWoo = $listProductosWoo->where(Constantes::$TYPE,'=','simple');
-
-        $listProductosSimplesSAG = $result->where(Constantes::$KANIGRUPO,'=',Constantes::$CODIGOGRUPOSAG);
-        $listProducVariablesSAG = $result->where(Constantes::$KANIGRUPO,'!=',Constantes::$CODIGOGRUPOSAG);
-
         $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
-
-        $this->ActuaizarInventarioProductoWooSimple($listProductosSimpleWoo,$listProductosSimplesSAG,$tipoPrecio);
-        $this->ActuaizarInventarioProductoWooVariable($listProductosVariablesWoo,$listaVariacionesProductosWoo,
-            $listProducVariablesSAG,$tipoPrecio);
+        $result = $this->ActualizarInventarioProductoWooVariable($listProductosVariablesWoo,$listaVariacionesProductosWoo,
+            $inventarioProductosSAG);
         return $result;
     }
 
@@ -150,19 +103,18 @@ class ProductoServicio
     /**
      * retorna un arreglo con la informacion del producto para actualizar
      */
-    public function ObtenerArrayProducto($productoSag,$idProductoWoo,$tipoPrecio)
+    public function ObtenerArrayProducto($productoSag,$idProductoWoo)
     {
         $formParams = ['id'=>$idProductoWoo,
             'stock_quantity' => intval($productoSag->n_saldo_actual),
-            'regular_price' =>(Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
-                              (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                                  $productoSag->precioDistribuidor];
+            'regular_price' => $productoSag->precioDetallista];
         return $formParams;
     }
 
-    public function ActuaizarInventarioProductoWooVariable($listProductosWooVariables,$listaVariacionesProductosWoo,
-                                                           $listProducVariablesSAG,$tipoPrecio)
+    public function ActualizarInventarioProductoWooVariable($listProductosWooVariables,$listaVariacionesProductosWoo,
+                                                           $listProducVariablesSAG)
     {
+        $result = '';
         foreach ($listProductosWooVariables as $productoWoo){
             $variacionesXProducto =  $listaVariacionesProductosWoo->whereIn('id',$productoWoo['variations']);
             $cantidadDeVariaciones = count($variacionesXProducto);
@@ -172,7 +124,7 @@ class ProductoServicio
             foreach ($variacionesXProducto as $variacionProducto){
                 $productoSAG = $listProducVariablesSAG->firstWhere('k_sc_codigo_articulo','=',$variacionProducto[Constantes::$SKU]);
                 if($productoSAG != null) {
-                    $formParams = $this->ObtenerArrayProducto($productoSAG,$variacionProducto['id'],$tipoPrecio);
+                    $formParams = $this->ObtenerArrayProducto($productoSAG,$variacionProducto['id']);
                     $arrayData[] = $formParams;
                     $tamanioArrayProdutoVariable++;
                 }
@@ -181,14 +133,16 @@ class ProductoServicio
                         $contadorProductosVariables == $cantidadDeVariaciones) && $tamanioArrayProdutoVariable > 0)
                 {
                     $formData = ['update' => $arrayData];
-                    $this->clienteServicioWoo
+                    $resultOperacion =  $this->clienteServicioWoo
                         ->post(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS. '/' .
                             $productoWoo['id']. Constantes::$ENDPOINTVARIACIONES.Constantes::$ENDPOINTBATCH , $formData);
+                    $result = $result . $resultOperacion;
                     $arrayData = [];
                     $tamanioArrayProdutoVariable = 0;
                 }
             }
         }
+        return $result;
     }
 
     public function ActuaizarInventarioProductoWooSimple($listProductosSimpleWoo,$listProductosSimplesSAG,$tipoPrecio){
@@ -216,6 +170,7 @@ class ProductoServicio
         }
     }
 
+    //Metodo para crear un producto simple en woocomerce
     public  function CrearProductoWoo($productoSag,$tipoPrecio){
         $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
         $formaParams = [
@@ -246,19 +201,21 @@ class ProductoServicio
     }
 
 
-    public  function CrearProductoVariacionWoo($productoSag,$id,$tipoPrecio){
-
+    public  function CrearProductoVariacionWoo($productoSag,$id){
         $data = [
-            'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
-                (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                    $productoSag->precioDistribuidor,
-            "sku" => $productoSag->k_sc_codigo_articulo,
+            'regular_price' => $productoSag->precioDetallista,
+            "sku" => $productoSag->k_sc_codigo_articulo,// k_sc_codigo_articulo hace referencia al codigo de barras de sag
             'manage_stock' => true,
             'attributes' => [
                     [
-                        'id' => 1,
+                        'id' => 3,
                          'name' => 'talla',
-                         'option' => $productoSag->Talla,
+                         'option' => $productoSag->talla,
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'color',
+                        'option' => $productoSag->descripcion_color,
                     ]
             ]
         ];
@@ -266,39 +223,36 @@ class ProductoServicio
         return $result;
     }
 
-    public  function CrearProductoVariableWoo($productoSag,$tipoPrecio){
-        $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
+    public  function CrearProductoVariableWoo($productoSag){
         $formaParams = [
-            'name' => $productoSag->ss_descripcion_referente,
+            'name' => $productoSag->sc_detalle_articulo,
             'type' => 'variable',
-            'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
-                (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                    $productoSag->precioDistribuidor,
-            'description' => $productoSag->sv_obs_articulo,
+            'regular_price' => $productoSag->precioDetallista,
             'short_description' => $productoSag->sv_obs_articulo,
-            "sku" => '',
+            "sku" => $productoSag->ss_descripcion_referente,
+            'purchase_note'=>$productoSag->codigo_articulo_principal,
             'manage_stock' => false,
             'categories' => [
                 [
                     'id'=> $productoSag->ka_ni_grupo
                 ]
             ],
-            'images' => [
-                [
-                    'src' => env('RUTAIMAGENES').$nomreImagen
-                    // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
-                    //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
-                ]
-            ],
             'attributes' => [
                 [
-                    'id' => 1,
+                    'id' => 3,
                     'name' => 'talla',
                     'position' => 0,
                     'visible' => true,
                     'variation' => true,
-                    'options' => ['21','22','23','24','25','26','27','28','29','30','31','32','33','34',
-                                    '35','36','37','38','39','40','41','42','43','44','45','46','47','48']
+                    'options' => Constantes::$TALLAS
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'color',
+                    'position' => 1,
+                    'visible' => true,
+                    'variation' => true,
+                    'options' => Constantes::$COLORES
                 ]
             ]
         ];
@@ -322,7 +276,7 @@ class ProductoServicio
                             ON k.ka_nl_color = c.ka_nl_color  
                             INNER JOIN art_cod_barras cb 
                             ON a.ka_nl_articulo = cb.ka_nl_articulo and c.ka_nl_color = cb.ka_nl_color AND cb.ka_nl_talla = t.ka_nl_talla  
-                            WHERE a.sc_tienda_virtual = 'S' and
+                            WHERE a.sc_tienda_virtual = 'S' and cb.ss_codigo_barras <> ''  and 
                             a.dd_fecha_ult_modificacion >"."'". $fecha."'");
         return $result;
     }
@@ -343,8 +297,8 @@ class ProductoServicio
                             INNER JOIN sta_tallas t With(NoLock) 
                             ON cb.ka_nl_talla = t.ka_nl_talla  
                             WHERE a.sc_tienda_virtual = 'S' AND 
-                            s.ka_nl_bodega = 1 AND 
-                            s.nd_cantidad > 0  AND s.ss_periodo = ".$periodo);
+                            s.ka_nl_bodega =". Constantes::$IDBODEGA ."
+                            AND s.nd_cantidad > 0  AND s.ss_periodo = ".$periodo);
         return $result;
     }
 
@@ -380,5 +334,10 @@ class ProductoServicio
         $partesLink= collect(explode("/",$direccionPadre));
         $idPadre = $partesLink->last();
         return $idPadre;
+    }
+
+    public function ObtenerProductoWoo($idProductoWoo){
+        $result =  (object)$this->clienteServicioWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$idProductoWoo);
+        return $result;
     }
 }

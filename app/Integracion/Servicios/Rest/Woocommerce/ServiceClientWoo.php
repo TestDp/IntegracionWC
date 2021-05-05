@@ -16,9 +16,14 @@ class ServiceClientWoo
 
     private $clientRest;
 
-    public function __construct(){}
+    public function __construct(){
+        $baseUrl = env('HOST');
+        $claveClienteWoo = env('CLAVE_CLIENTE');
+        $claveSecretaWoo = env('CLAVE_SECRETA');
+        $this->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
+    }
 
-    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
+    private function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
         $this->clientRest = new Client(
             ['base_uri' => $baseUrl ,
                 'auth' => [$claveClienteWoo, $claveSecretaWoo]

@@ -19,15 +19,16 @@ class OrdenServicio
 
     public $serviceClientWoo;
     public $serviceClientSag;
+    public $productoServicio;
 
-    public function __construct(ServiceClientWoo $serviceClientWoo, ServiceClientSag $serviceClientSag){
+    public function __construct(ServiceClientWoo $serviceClientWoo, ServiceClientSag $serviceClientSag,
+                                ProductoServicio $productoServicio){
         $this->serviceClientWoo = $serviceClientWoo;
         $this->serviceClientSag = $serviceClientSag;
+        $this->productoServicio  = $productoServicio;
     }
 
-    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
-        $this->serviceClientWoo->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
-    }
+
     public function  ConsultarOrdenesWoo(){
         $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES);
         return $result;
@@ -58,30 +59,33 @@ class OrdenServicio
         $movimiento->setAttribute("movimientoId", 1);
         $movimiento->setAttribute("n_numero_documento", "0");//se envia cero
         $movimiento->setAttribute("num_doc", $ordenWoo->id);
-        $movimiento->setAttribute("fuente", "PW");//PD : PEDIDOS MEDELLIN temporal mientras que se crea PW
+        $movimiento->setAttribute("fuente", Constantes::$FUENTE);
         $movimiento->setAttribute("nit", $clienteWoo->s_identificador);
         $movimiento->setAttribute("fecha", $fechas[0]);
         $movimiento->setAttribute("d_fecha_documento", $fechas[0]);
-        $movimiento->setAttribute("vendedor","1037591898");
-        $movimiento->setAttribute("usuario", "ALEXA");
+        $movimiento->setAttribute("vendedor",Constantes::$CCVENDEDOR);
+        $movimiento->setAttribute("usuario", Constantes::$USUARIO);
         $movimiento->setAttribute("RealizarCommit", "S");
         //aca iria un ciclo segun las diferentes skus de la orden
         $ind =1;
         foreach ($ordenWoo->line_items as $detalleProducto)
         {
+            $productoVariable = $this->productoServicio->ObtenerProductoWoo($detalleProducto['product_id']);
             $detalleProducto = (object)$detalleProducto;
             $movimientoDetalle = $doc->createElement("movimientoDetalle");
             $movimientoDetalle = $movimiento->appendChild($movimientoDetalle);
             $movimientoDetalle->setAttribute("movimientoDetalleId", $ind);
             $movimientoDetalle->setAttribute("movimientoId", 1);
             $movimientoDetalle->setAttribute("sc_cual_precio", 1);
-            $movimientoDetalle->setAttribute("codigoArticulo", $detalleProducto->sku);
+            $movimientoDetalle->setAttribute("codigoArticulo", $productoVariable->purchase_note);
+            $movimientoDetalle->setAttribute("color", $detalleProducto->meta_data[0]['value']);
+            $movimientoDetalle->setAttribute("talla", $detalleProducto->meta_data[1]['value']);
             $movimientoDetalle->setAttribute("cantidad", $detalleProducto->quantity);
             $movimientoDetalle->setAttribute("valorUnitario",$detalleProducto->price);
-            $movimientoDetalle->setAttribute("iva", "19");
+            $movimientoDetalle->setAttribute("iva", Constantes::$IVA);
             $movimientoDetalle->setAttribute("descuento", "0");
             $movimientoDetalle->setAttribute("descuento2", "0");
-            $movimientoDetalle->setAttribute("bodega", "01");
+            $movimientoDetalle->setAttribute("bodega", Constantes::$CODIGOBODEGA);
             $ind = $ind + 1;
         }
         $movimientosOtrosDatos= $doc -> createElement ( "movimientosOtrosDatos" );

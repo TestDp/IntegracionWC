@@ -45,33 +45,7 @@ class CargaArticulos extends Command
      */
     public function handle()
     {
-       $nombreHost = $this->argument('host');
-      switch ($nombreHost){
-           case Constantes::$NOMBREHOSTDETALLISTAS:
-                   $baseUrl = env('HOST_DETALLISTAS');
-                   $claveClienteWoo = env('CLAVE_CLIENTE_DETALLISTAS');
-                   $claveSecretaWoo = env('CLAVE_SECRETA_DETALLISTAS');
-                   $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
-                   $this->pcontroller->ActualizarInventarioProductosWoo(Constantes::$PRECIODETALLISTAS);
-               break;
-           case Constantes::$NOMBREHOSTMAYORISTAS:
-                   $baseUrl = env('HOST_MAYORISTAS');
-                   $claveClienteWoo = env('CLAVE_CLIENTE_MAYORISTAS');
-                   $claveSecretaWoo = env('CLAVE_SECRETA_MAYORISTAS');
-                   $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
-                   $this->pcontroller->ActualizarInventarioProductosWoo(Constantes::$PRECIOMAYORISTAS);
-               break;
-           case Constantes::$NOMBREHOSTDISTRIBUIDORES:
-                   $baseUrl = env('HOST_DISTRIBUIDORES');
-                   $claveClienteWoo = env('CLAVE_CLIENTE_DISTRIBUIDORES');
-                   $claveSecretaWoo = env('CLAVE_SECRETA_DISTRIBUIDORES');
-                   $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
-                   $this->pcontroller->ActualizarInventarioProductosWoo(Constantes::$PRECIODISTRIBUIDORES);
-               break;
-           default:
-               $this->info('comando no valido');
-       }
+        $this->pcontroller->ActualizarInventarioProductosWoo();
         $this->info('Se Actualizo el inventario  con exito');
-
     }
 }

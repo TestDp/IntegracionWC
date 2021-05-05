@@ -28,17 +28,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('consumo:servicios',[Constantes::$NOMBREHOSTDETALLISTAS])->everyTwoMinutes();
-        //$schedule->command('consumo:ordenes')->everyTwoMinutes();
-        $schedule->command('consumo:articulos',[Constantes::$NOMBREHOSTDETALLISTAS])->everyFiveMinutes();
-
-
-        //$schedule->command('consumo:servicios',[Constantes::$NOMBREHOSTMAYORISTAS])->hourly();
-        //$schedule->command('consumo:articulos',[Constantes::$NOMBREHOSTMAYORISTAS])->hourly();
-
-        //$schedule->command('consumo:servicios',[Constantes::$NOMBREHOSTDISTRIBUIDORES])->hourly();
-        //$schedule->command('consumo:articulos',[Constantes::$NOMBREHOSTDISTRIBUIDORES])->hourly();
-
+        $schedule->command('consumo:servicios')->everyTwoMinutes();
+        $schedule->command('consumo:ordenes')->everyTwoMinutes();
+        $schedule->command('consumo:articulos')->everyFiveMinutes();
     }
 
     /**

@@ -9,6 +9,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\OrdenController;
+use App\Http\Controllers\ProductoController;
 use Illuminate\Console\Command;
 
 
@@ -34,6 +35,7 @@ class CargaOrdenes  extends Command
      * @return void
      */
     public $ocontroller;
+
     public function __construct( OrdenController  $controllerOrden)
     {
         parent::__construct();
@@ -47,10 +49,6 @@ class CargaOrdenes  extends Command
      */
     public function handle()
     {
-        $baseUrl = env('HOST_DETALLISTAS');
-        $claveClienteWoo = env('CLAVE_CLIENTE_DETALLISTAS');
-        $claveSecretaWoo = env('CLAVE_SECRETA_DETALLISTAS');
-        $this->ocontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
         $this->ocontroller->CrearOrdenesSagDesdeWoo();
         $this->info('Sec crearon las ordenes de la ultima hora ');
     }

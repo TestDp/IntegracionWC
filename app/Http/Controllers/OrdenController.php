@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Integracion\Comunes\Constantes;
 use App\Integracion\Negocio\Logica\Producto\OrdenServicio;
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -22,10 +23,6 @@ class OrdenController extends Controller
     public function __construct(OrdenServicio $ordenServicio,ClienteController $clienteController){
         $this->ordenServicio = $ordenServicio;
         $this->clienteController = $clienteController;
-    }
-
-    public function InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo){
-        $this->ordenServicio->InicializarServiceClientWoo($baseUrl, $claveClienteWoo, $claveSecretaWoo);
     }
 
     public function ConsultarOrdenesWoo(){
@@ -48,7 +45,7 @@ class OrdenController extends Controller
     public function CrearOrdenesSagDesdeWoo(){
         date_default_timezone_set('America/Bogota');
         $fechaActual = date('Y-m-d\TH:i:s');
-        $fechaConsulta = date('Y-m-d\TH:i:s',strtotime($fechaActual . "- 10 days"));
+        $fechaConsulta = date('Y-m-d\TH:i:s',strtotime($fechaActual . Constantes::$NUMERODEDIASCONSULTA));
         $ordenesWoo =  $this->ordenServicio->ConsultarOrdenesWooByDate($fechaConsulta);
         $resultados = array();
         foreach ($ordenesWoo as $ordenWoo) {
