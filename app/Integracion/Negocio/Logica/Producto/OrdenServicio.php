@@ -71,13 +71,16 @@ class OrdenServicio
         foreach ($ordenWoo->line_items as $detalleProducto)
         {
             $productoVariable = $this->productoServicio->ObtenerProductoWoo($detalleProducto['product_id']);
+            $vowels = array("<p>", "</p>", "\n");
+            $purchase_note= str_replace($vowels, "", $productoVariable->purchase_note);
+
             $detalleProducto = (object)$detalleProducto;
             $movimientoDetalle = $doc->createElement("movimientoDetalle");
             $movimientoDetalle = $movimiento->appendChild($movimientoDetalle);
             $movimientoDetalle->setAttribute("movimientoDetalleId", $ind);
             $movimientoDetalle->setAttribute("movimientoId", 1);
             $movimientoDetalle->setAttribute("sc_cual_precio", 1);
-            $movimientoDetalle->setAttribute("codigoArticulo", $productoVariable->purchase_note);
+            $movimientoDetalle->setAttribute("codigoArticulo",$purchase_note);
             $movimientoDetalle->setAttribute("color", $detalleProducto->meta_data[0]['value']);
             $movimientoDetalle->setAttribute("talla", $detalleProducto->meta_data[1]['value']);
             $movimientoDetalle->setAttribute("cantidad", $detalleProducto->quantity);

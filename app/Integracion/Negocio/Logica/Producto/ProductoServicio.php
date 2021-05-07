@@ -43,6 +43,7 @@ class ProductoServicio
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         $listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
         $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
+        $result = collect();
         foreach ($listProductosSag as $productovariableSag){
             $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
             $productoWoo = null;
@@ -58,25 +59,31 @@ class ProductoServicio
                 $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag,$productoVariableWoo['id']);
                 $listProductosVariablesWoo->push($productoVariableWoo);
                 $listaVariacionesProductosWoo->push($variacionProducto);
+                $resultOperacion = collect($productoVariableWoo);
+                $result = $result->concat($resultOperacion);
+                $resultOperacion = collect($variacionProducto);
+                $result = $result->concat($resultOperacion);
             }
             else {
-                $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
+                //$productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
                 if (is_null($productoWooVariacion)) {
                     $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id']);
                     $listaVariacionesProductosWoo->push($variacionProducto);
+                    $resultOperacion = collect($variacionProducto);
+                    $result = $result->concat($resultOperacion);
                 }
                 else
                 {
                     $formParams = ['name' => $productovariableSag->sc_detalle_articulo,
                                    'description' => $productovariableSag->sv_obs_articulo,
                                  'purchase_note'=>$productovariableSag->codigo_articulo_principal];
-                   $result = $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'. $productoWoo['id'], $formParams);
-
+                    $resultOperacion = collect($this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'. $productoWoo['id'], $formParams));
+                    $result = $result->concat($resultOperacion);
                 }
             }
         }
 
-        return "success";
+        return $result;
     }
 
     public  function  ActualizarInventarioProductosWoo($periodo)
@@ -114,7 +121,7 @@ class ProductoServicio
     public function ActualizarInventarioProductoWooVariable($listProductosWooVariables,$listaVariacionesProductosWoo,
                                                            $listProducVariablesSAG)
     {
-        $result = '';
+        $result = collect();
         foreach ($listProductosWooVariables as $productoWoo){
             $variacionesXProducto =  $listaVariacionesProductosWoo->whereIn('id',$productoWoo['variations']);
             $cantidadDeVariaciones = count($variacionesXProducto);
@@ -133,10 +140,10 @@ class ProductoServicio
                         $contadorProductosVariables == $cantidadDeVariaciones) && $tamanioArrayProdutoVariable > 0)
                 {
                     $formData = ['update' => $arrayData];
-                    $resultOperacion =  $this->clienteServicioWoo
+                    $resultOperacion = collect( $this->clienteServicioWoo
                         ->post(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS. '/' .
-                            $productoWoo['id']. Constantes::$ENDPOINTVARIACIONES.Constantes::$ENDPOINTBATCH , $formData);
-                    $result = $result . $resultOperacion;
+                            $productoWoo['id']. Constantes::$ENDPOINTVARIACIONES.Constantes::$ENDPOINTBATCH , $formData));
+                    $result = $result->concat($resultOperacion);
                     $arrayData = [];
                     $tamanioArrayProdutoVariable = 0;
                 }
@@ -263,8 +270,9 @@ class ProductoServicio
 
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("SELECT concat(a.ss_detalle_artic2,' ',sc_referencia) as sc_detalle_articulo, a.k_sc_codigo_articulo as codigo_articulo_principal , a.nd_valor_venta4 as precioDistribuidor,n_valor_venta_especial as precioMayorista,
-                            nd_precio8 as precioDetallista,sv_obs_articulo, a.sc_referencia AS ss_descripcion_referente,sv_obs_articulo,
+        GetConsultaSagJson("SELECT concat(a.ss_detalle_artic2,' ',sc_referencia) as sc_detalle_articulo,
+                            a.k_sc_codigo_articulo as codigo_articulo_principal ,                            
+                            a.nd_valor_venta4 as precioDetallista,sv_obs_articulo, a.sc_referencia AS ss_descripcion_referente,sv_obs_articulo,
                             cb.ss_codigo_barras AS k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo,ka_ni_grupo,  t.ss_talla as talla,  
                             c.ss_color as codigo_color,  c.ss_color_largo as descripcion_color
                             FROM articulos a With(NoLock) 
@@ -276,29 +284,28 @@ class ProductoServicio
                             ON k.ka_nl_color = c.ka_nl_color  
                             INNER JOIN art_cod_barras cb 
                             ON a.ka_nl_articulo = cb.ka_nl_articulo and c.ka_nl_color = cb.ka_nl_color AND cb.ka_nl_talla = t.ka_nl_talla  
-                            WHERE a.sc_tienda_virtual = 'S' and cb.ss_codigo_barras <> ''  and 
+                            WHERE t.ss_talla <> 'SURT' and c.ss_color <> 'SURT' and a.sc_tienda_virtual = 'S' and cb.ss_codigo_barras <> ''  and 
                             a.dd_fecha_ult_modificacion >"."'". $fecha."'");
         return $result;
     }
 
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("SELECT cb.ss_codigo_barras as k_sc_codigo_articulo, a.sc_referencia, 
-                             a.nd_valor_venta4 as precioDistribuidor,  a.n_valor_venta_especial as precioMayorista,  
-                            a.nd_precio8 as precioDetallista,  s.ss_talla as talla,  c.ss_color as codigo_color,
-                            c.ss_color_largo as descripcion_color,  s.nd_cantidad as n_saldo_actual,  a.ka_ni_grupo, a.sc_referencia as ss_descripcion_referente
-                            FROM saldos_articulos_bin s  With(NoLock) 
-                            INNER JOIN articulos a With(NoLock) ON 
-                            s.ka_nl_articulo = a.ka_nl_articulo
-                            INNER JOIN sta_colores c With(Nolock) 
-                            ON s.ss_color = c.ss_color
-                            INNER JOIN art_cod_barras cb 
-                            ON a.ka_nl_articulo = cb.ka_nl_articulo and c.ka_nl_color = cb.ka_nl_color
-                            INNER JOIN sta_tallas t With(NoLock) 
-                            ON cb.ka_nl_talla = t.ka_nl_talla  
-                            WHERE a.sc_tienda_virtual = 'S' AND 
-                            s.ka_nl_bodega =". Constantes::$IDBODEGA ."
-                            AND s.nd_cantidad > 0  AND s.ss_periodo = ".$periodo);
+        GetConsultaSagJson("SELECT cb.ss_codigo_barras as k_sc_codigo_articulo, a.sc_referencia,
+                                    a.nd_valor_venta4 as precioDetallista,  s.ss_talla as talla,  c.ss_color as codigo_color,
+                                    c.ss_color_largo as descripcion_color,  s.nd_cantidad as n_saldo_actual,  a.ka_ni_grupo, a.sc_referencia as ss_descripcion_referente
+                                    FROM  articulos a With(NoLock)
+                                    INNER JOIN art_cod_barras cb 
+                                    ON a.ka_nl_articulo = cb.ka_nl_articulo 
+                                    INNER JOIN sta_colores c With(Nolock) 
+                                    ON cb.ka_nl_color = c.ka_nl_color
+                                    INNER JOIN sta_tallas t With(NoLock) 
+                                    ON cb.ka_nl_talla = t.ka_nl_talla 
+                                    INNER JOIN saldos_articulos_bin s  With(NoLock) 
+                                     ON  s.ka_nl_articulo = a.ka_nl_articulo AND s.ss_talla = t.ss_talla and s.ss_color = c.ss_color
+                                    WHERE t.ss_talla <> 'SURT' and c.ss_color <> 'SURT' and a.sc_tienda_virtual = 'S' AND cb.ss_codigo_barras <> '' AND
+                                    s.ka_nl_bodega =". Constantes::$IDBODEGA ."
+                                    AND s.nd_cantidad > 0  AND s.ss_periodo = ".$periodo);
         return $result;
     }
 

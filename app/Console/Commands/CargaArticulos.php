@@ -17,7 +17,7 @@ class CargaArticulos extends Command
      *
      * @var string
      */
-    protected $signature = 'consumo:servicios {host}';
+    protected $signature = 'consumo:servicios';
 
     /**
      * The console command description.

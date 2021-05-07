@@ -57,7 +57,7 @@ class OrdenController extends Controller
                 $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
             }
         }
-        Log::info('Se han creado las ordenes con exito',array('Ordenes Creadas' => $ordenesWoo));
+        Log::info('Se han creado las ordenes con exito',array('Ordenes Creadas' => $resultados));
         return "proceso terminado";
     }
 }
