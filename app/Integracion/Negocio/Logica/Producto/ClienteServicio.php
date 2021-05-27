@@ -63,7 +63,7 @@ class ClienteServicio
 
         $codigoDaneCiudad = $doc -> createElement ( "codigoDaneCiudad" );
         $codigoDaneCiudad = $cliente -> appendChild ( $codigoDaneCiudad );
-        $textcodigoDaneCiudad = $doc -> createTextNode ( "05380" );
+        $textcodigoDaneCiudad = $doc -> createTextNode ( "05001" );
         $codigoDaneCiudad -> appendChild ( $textcodigoDaneCiudad );
 
         $naturaleza = $doc -> createElement ( "naturaleza" );
@@ -84,7 +84,17 @@ class ClienteServicio
 
         $nombre = $doc -> createElement ( "nombre" );
         $nombre = $cliente -> appendChild ( $nombre );
-        $textnombre = $doc -> createTextNode ( $clienteWoo->first_name ." ".$clienteWoo->last_name );
+        $textnombre = $doc -> createTextNode ( strtoupper($clienteWoo->first_name) );
+        $nombre -> appendChild ( $textnombre );
+
+        $nombre = $doc -> createElement ( "nombre1" );
+        $nombre = $cliente -> appendChild ( $nombre );
+        $textnombre = $doc -> createTextNode ( strtoupper($clienteWoo->first_name) );
+        $nombre -> appendChild ( $textnombre );
+
+        $nombre = $doc -> createElement ( "apellido1" );
+        $nombre = $cliente -> appendChild ( $nombre );
+        $textnombre = $doc -> createTextNode ( strtoupper($clienteWoo->last_name) );
         $nombre -> appendChild ( $textnombre );
 
         $direccion = $doc -> createElement ( "direccion" );
@@ -192,18 +202,37 @@ class ClienteServicio
         $textcupoMaximo = $doc -> createTextNode ( 99999999999 );
         $cupoMaximo -> appendChild ( $textcupoMaximo );
 
-        $Apellido1 = $doc -> createElement ( "Apellido1" );
-        $Apellido1 = $cliente -> appendChild ( $Apellido1 );
-        $textApellido1 = $doc -> createTextNode ( $clienteWoo->last_name );
-        $Apellido1 -> appendChild ( $textApellido1 );
+        $codigoPostal = $doc -> createElement ( "codigoPostal" );
+        $codigoPostal = $cliente -> appendChild ( $codigoPostal );
+        $textcodigoPostal = $doc -> createTextNode ( '000000');
+        $codigoPostal -> appendChild ( $textcodigoPostal );
 
+        $habeasData = $doc -> createElement ( "habeasData" );
+        $habeasData = $cliente -> appendChild ( $habeasData );
+        $texthabeasData = $doc -> createTextNode ( 'S');
+        $habeasData -> appendChild ( $texthabeasData );
 
-        $Nombre1 = $doc -> createElement ( "Nombre1" );
-        $Nombre1 = $cliente -> appendChild ( $Nombre1 );
-        $textNombre1 = $doc -> createTextNode ( $clienteWoo->first_name );
-        $Nombre1 -> appendChild ( $textNombre1 );
+        $centroCosto = $doc -> createElement ( "centroCosto" );
+        $centroCosto = $cliente -> appendChild ( $centroCosto );
+        $textcentroCosto = $doc -> createTextNode ( '1024');
+        $centroCosto -> appendChild ( $textcentroCosto );
 
-       return  $doc->saveXML();
+        $generaFacElectronica = $doc -> createElement ( "generafacelectronica" );
+        $generaFacElectronica = $cliente -> appendChild ( $generaFacElectronica );
+        $textgeneraFacElectronica = $doc -> createTextNode ( 'S');
+        $generaFacElectronica -> appendChild ( $textgeneraFacElectronica );
+
+        $emailFacElectronica = $doc -> createElement ( "emailFacElectronica" );
+        $emailFacElectronica = $cliente -> appendChild ( $emailFacElectronica );
+        $textemailFacElectronica = $doc -> createTextNode ( $clienteWoo->email);
+        $emailFacElectronica -> appendChild ( $textemailFacElectronica );
+
+        $responsabilidadFiscal = $doc -> createElement ( "responsabilidadFiscal" );
+        $responsabilidadFiscal = $cliente -> appendChild ( $responsabilidadFiscal );
+        $textresponsabilidadFiscal = $doc -> createTextNode ( 'R-99-PN');
+        $responsabilidadFiscal -> appendChild ( $textresponsabilidadFiscal );
+
+        return  $doc->saveXML();
 
     }
 }

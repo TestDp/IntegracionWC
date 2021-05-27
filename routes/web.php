@@ -41,6 +41,9 @@ Route::get('/saveOrders', 'OrdenController@CrearOrdenesSagDesdeWoo')->name('save
 
 
 Route::get('/comandos', function () {
+    //Artisan::call('consumo:servicios');
     Artisan::call('consumo:ordenes');
+   // Artisan::call('consumo:articulos');
+
 });
 

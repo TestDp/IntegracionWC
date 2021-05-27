@@ -13,7 +13,7 @@ class Constantes
 {
     public static $MAXPETICIONBACHTWOO = 98;/** Maximo de peticiones en bacht  por defecto en woocomerce **/
     public static $URLBASE = '/wp-json/wc/v3';
-    public static  $NUMERODEDIASCONSULTA = '- 3 days';
+    public static  $NUMERODEDIASCONSULTA = '- 1 hour';
 
     /**End pointS Woocomerce*/
     public static $ENDPOINTPRODUCTOS = '/products';
@@ -36,12 +36,12 @@ class Constantes
         'Terracota','Rosado','Militar','Guayaba','Rey','Estampado','Cafe','Indigo','Camel','Caqui','Salmon','Coral',
         'Palo de Rosa','Fucsia','Verde Jade','Verde Antioquia','Moca','Gris','Menta','Beige','Indu','VINOTINTO','Petroleo',
         'Mandarina','Coral Medio','Bordado','Miel','Lila','Negro/Plata','Negro/Rosa','Negro/Oro','Gris/Plata','Plata','Verde Neon',
-        'Dorado'];
+        'Dorado','Navy','Rosado Melon'];
 
     /**cosntantes utilizadas en la creacion del xml de la orden*/
     public static $FUENTE = 'pw';
-    public static $CCVENDEDOR = '1037591898';
+    public static $CCVENDEDOR = '202';
     public static $USUARIO='ALEXA';
-    public static $IVA ='19';
+    public static $IVA ='0';
 
 }

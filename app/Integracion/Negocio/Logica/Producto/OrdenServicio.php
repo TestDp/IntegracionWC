@@ -62,6 +62,8 @@ class OrdenServicio
         $movimiento->setAttribute("fuente", Constantes::$FUENTE);
         $movimiento->setAttribute("nit", $clienteWoo->s_identificador);
         $movimiento->setAttribute("fecha", $fechas[0]);
+        $movimiento->setAttribute("dieccionEntrega", $ordenWoo->shipping['address_1']);
+        $movimiento->setAttribute("observaciones", strtoupper($ordenWoo->shipping_lines[0]['method_title']));
         $movimiento->setAttribute("d_fecha_documento", $fechas[0]);
         $movimiento->setAttribute("vendedor",Constantes::$CCVENDEDOR);
         $movimiento->setAttribute("usuario", Constantes::$USUARIO);
@@ -91,6 +93,23 @@ class OrdenServicio
             $movimientoDetalle->setAttribute("bodega", Constantes::$CODIGOBODEGA);
             $ind = $ind + 1;
         }
+        //bloque para crear el flete
+        if($ordenWoo->shipping_lines[0]['method_title'] == 'Domicilio'){
+            $detalleProducto = (object)$ordenWoo->shipping_lines[0];
+            $movimientoDetalle = $doc->createElement("movimientoDetalle");
+            $movimientoDetalle = $movimiento->appendChild($movimientoDetalle);
+            $movimientoDetalle->setAttribute("movimientoDetalleId", $ind);
+            $movimientoDetalle->setAttribute("movimientoId", 1);
+            $movimientoDetalle->setAttribute("sc_cual_precio", 1);
+            $movimientoDetalle->setAttribute("codigoArticulo",'10');// codigo en sag del producto flete
+            $movimientoDetalle->setAttribute("cantidad", 1);
+            $movimientoDetalle->setAttribute("valorUnitario",$detalleProducto->total);
+            $movimientoDetalle->setAttribute("iva", Constantes::$IVA);
+            $movimientoDetalle->setAttribute("descuento", "0");
+            $movimientoDetalle->setAttribute("descuento2", "0");
+            $movimientoDetalle->setAttribute("bodega", Constantes::$CODIGOBODEGA);
+        }
+        //fin bloque para crear el flete
         $movimientosOtrosDatos= $doc -> createElement ( "movimientosOtrosDatos" );
         $movimientosOtrosDatos = $movimiento -> appendChild ( $movimientosOtrosDatos );
         $movimientosOtrosDatos->setAttribute("movimientoId",  1);

@@ -65,7 +65,7 @@ class ProductoServicio
                 $result = $result->concat($resultOperacion);
             }
             else {
-                //$productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
+
                 if (is_null($productoWooVariacion)) {
                     $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id']);
                     $listaVariacionesProductosWoo->push($variacionProducto);
@@ -74,9 +74,8 @@ class ProductoServicio
                 }
                 else
                 {
-                    $formParams = ['name' => $productovariableSag->sc_detalle_articulo,
-                                   'description' => $productovariableSag->sv_obs_articulo,
-                                 'purchase_note'=>$productovariableSag->codigo_articulo_principal];
+                    $formParams = [ 'description' => $productovariableSag->sv_obs_articulo,
+                                    'purchase_note'=>$productovariableSag->codigo_articulo_principal];
                     $resultOperacion = collect($this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'. $productoWoo['id'], $formParams));
                     $result = $result->concat($resultOperacion);
                 }
@@ -231,6 +230,7 @@ class ProductoServicio
     }
 
     public  function CrearProductoVariableWoo($productoSag){
+        $nomreImagen = 'no-img.jpg';
         $formaParams = [
             'name' => $productoSag->sc_detalle_articulo,
             'type' => 'variable',
@@ -242,6 +242,13 @@ class ProductoServicio
             'categories' => [
                 [
                     'id'=> $productoSag->ka_ni_grupo
+                ]
+            ],
+            'images' => [
+                [
+                    'src' => env('RUTAIMAGENES').$nomreImagen
+                    // ss_direccion_logo   ejemplo: C:\Users\Servidor\Desktop\FOTOS PRODUCTOS\ABRASIVOS\LIJA  ABRACOL.jpg
+                    //Concatenar la url(https://depositolaramada.com/wp-content/uploads/2020/) + el nombre de la imagen VALIDAR CAMPO.
                 ]
             ],
             'attributes' => [
