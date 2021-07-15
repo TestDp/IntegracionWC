@@ -34,7 +34,9 @@ class OrdenServicio
         return $result;
     }
     public function  ConsultarOrdenesWooByDate($fecha){
-        $result =  $this->serviceClientWoo->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES.'?after='.$fecha);
+        $result =  $this->serviceClientWoo
+            ->Get(Constantes::$URLBASE.Constantes::$ENDPOINTORDENES.
+                '?after='.$fecha.'&status!=cancelled&status!=failed&status!=trash');
         return $result;
     }
 
@@ -83,8 +85,8 @@ class OrdenServicio
             $movimientoDetalle->setAttribute("movimientoId", 1);
             $movimientoDetalle->setAttribute("sc_cual_precio", 1);
             $movimientoDetalle->setAttribute("codigoArticulo",$purchase_note);
-            $movimientoDetalle->setAttribute("color", $detalleProducto->meta_data[0]['value']);
-            $movimientoDetalle->setAttribute("talla", $detalleProducto->meta_data[1]['value']);
+            $movimientoDetalle->setAttribute("color", $detalleProducto->meta_data[1]['value']);
+            $movimientoDetalle->setAttribute("talla", $detalleProducto->meta_data[0]['display_value']);
             $movimientoDetalle->setAttribute("cantidad", $detalleProducto->quantity);
             $movimientoDetalle->setAttribute("valorUnitario",$detalleProducto->price);
             $movimientoDetalle->setAttribute("iva", Constantes::$IVA);

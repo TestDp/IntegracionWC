@@ -63,7 +63,8 @@ class ClienteServicio
 
         $codigoDaneCiudad = $doc -> createElement ( "codigoDaneCiudad" );
         $codigoDaneCiudad = $cliente -> appendChild ( $codigoDaneCiudad );
-        $textcodigoDaneCiudad = $doc -> createTextNode ( "05001" );
+       // $textcodigoDaneCiudad = $doc -> createTextNode ( "05001" );
+        $textcodigoDaneCiudad = $doc -> createTextNode ($clienteWoo->billing->city);
         $codigoDaneCiudad -> appendChild ( $textcodigoDaneCiudad );
 
         $naturaleza = $doc -> createElement ( "naturaleza" );
@@ -84,7 +85,7 @@ class ClienteServicio
 
         $nombre = $doc -> createElement ( "nombre" );
         $nombre = $cliente -> appendChild ( $nombre );
-        $textnombre = $doc -> createTextNode ( strtoupper($clienteWoo->first_name) );
+        $textnombre = $doc -> createTextNode ( strtoupper($clienteWoo->first_name) ." " .strtoupper($clienteWoo->last_name));
         $nombre -> appendChild ( $textnombre );
 
         $nombre = $doc -> createElement ( "nombre1" );
@@ -231,6 +232,11 @@ class ClienteServicio
         $responsabilidadFiscal = $cliente -> appendChild ( $responsabilidadFiscal );
         $textresponsabilidadFiscal = $doc -> createTextNode ( 'R-99-PN');
         $responsabilidadFiscal -> appendChild ( $textresponsabilidadFiscal );
+
+        $nitVendedor = $doc -> createElement ( "nitVendedor" );
+        $nitVendedor = $cliente -> appendChild ( $nitVendedor );
+        $textnitVendedor = $doc -> createTextNode ( Constantes::$CCVENDEDOR);
+        $nitVendedor -> appendChild ( $textnitVendedor );
 
         return  $doc->saveXML();
 
