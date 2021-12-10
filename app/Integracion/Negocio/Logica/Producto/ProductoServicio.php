@@ -12,6 +12,7 @@ namespace App\Integracion\Negocio\Logica\Producto;
 use App\Integracion\Comunes\Constantes;
 use App\Integracion\Servicios\Rest\Woocommerce\ServiceClientWoo;
 use App\Integracion\Servicios\Soap\Sag\ServiceClientSag;
+use Illuminate\Support\Facades\Cache;
 
 
 class ProductoServicio
@@ -19,6 +20,7 @@ class ProductoServicio
 
     public $clienteServicioWoo;
     public $clienteServicioSag;
+    public $listProductosVariablesWoo;
 
   public function __construct(ServiceClientSag $clienteServicioSag,ServiceClientWoo $clienteServicioWoo){
         $this->clienteServicioWoo = $clienteServicioWoo;
@@ -39,10 +41,12 @@ class ProductoServicio
 
 
     public  function  ActualizarProductosWoo($fecha){
+        Cache::flush();
         $listProductosSag  = collect($this->ConsultarProductosSAG($fecha));
         $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
         $listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
-        $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
+        $this->listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
+        $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo();
         $result = collect();
         foreach ($listProductosSag as $productovariableSag){
             $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
@@ -87,19 +91,30 @@ class ProductoServicio
 
     public  function  ActualizarInventarioProductosWoo($periodo)
     {
+        $keyCacheproductosWoo= "productosWoo";
+        $keyCachevariacionesProductosWoo = "variacionesProductosWoo";
         $inventarioProductosSAG  = collect($this->ConsultarInventarioProductosSAG($periodo));
-        $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
-        $listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
-        $listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
-        $result = $this->ActualizarInventarioProductoWooVariable($listProductosVariablesWoo,$listaVariacionesProductosWoo,
+       // $listProductosWoo = $this->ConsultarListaTotalDeProductosWoo();
+        $listProductosWoo = Cache::rememberForever($keyCacheproductosWoo,function (){
+            return $this->ConsultarListaTotalDeProductosWoo();
+        });
+        //$listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
+        $this->listProductosVariablesWoo = $listProductosWoo->where(Constantes::$TYPE,'=','variable');
+        //$listaVariacionesProductosWoo = $this->ObtenerVariacionesProductosWoo($listProductosVariablesWoo);
+
+        $listaVariacionesProductosWoo = Cache::rememberForever($keyCachevariacionesProductosWoo,function (){
+            return $this->ObtenerVariacionesProductosWoo();
+        });
+
+        $result = $this->ActualizarInventarioProductoWooVariable($this->listProductosVariablesWoo,$listaVariacionesProductosWoo,
             $inventarioProductosSAG);
         //return $result;
         return $inventarioProductosSAG;
     }
 
-    public function ObtenerVariacionesProductosWoo($listProductosWooVariables){
+    public function ObtenerVariacionesProductosWoo(){
         $listaVariacionesWoo =  [];
-        foreach ($listProductosWooVariables as $productoWoo){
+        foreach ($this->listProductosVariablesWoo as $productoWoo){
             $listTem =  $this->clienteServicioWoo
                 ->Get(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$productoWoo['id'].
                     Constantes::$ENDPOINTVARIACIONES.'?per_page=100');
@@ -214,16 +229,17 @@ class ProductoServicio
             "sku" => $productoSag->k_sc_codigo_articulo,// k_sc_codigo_articulo hace referencia al codigo de barras de sag
             'manage_stock' => true,
             'attributes' => [
-                    [
-                        'id' => 3,
-                         'name' => 'talla',
-                         'option' => $productoSag->talla,
-                    ],
-                    [
-                        'id' => 2,
-                        'name' => 'color',
-                        'option' => $productoSag->descripcion_color,
-                    ]
+                [
+                    'id' => 2,
+                    'name' => 'color',
+                    'option' => $productoSag->descripcion_color,
+                ],
+                [
+                    'id' => 3,
+                     'name' => 'talla',
+                     'option' => $productoSag->talla,
+                ]
+
             ]
         ];
         $result = $this->clienteServicioWoo->post(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$id.'/variations', $data);
@@ -233,7 +249,7 @@ class ProductoServicio
     public  function CrearProductoVariableWoo($productoSag){
         $nomreImagen = 'no-img.jpg';
         $formaParams = [
-            'name' => $productoSag->sc_detalle_articulo,
+            'name' => ucfirst(strtolower($productoSag->sc_detalle_articulo)),
             'type' => 'variable',
             'regular_price' => $productoSag->precioDetallista,
             'short_description' => ucfirst(strtolower($productoSag->sv_obs_articulo)),
@@ -254,20 +270,20 @@ class ProductoServicio
             ],
             'attributes' => [
                 [
-                    'id' => 3,
-                    'name' => 'talla',
+                    'id' => 2,
+                    'name' => 'color',
                     'position' => 0,
                     'visible' => true,
                     'variation' => true,
-                    'options' => Constantes::$TALLAS
+                    'options' => Constantes::$COLORES
                 ],
                 [
-                    'id' => 2,
-                    'name' => 'color',
+                    'id' => 3,
+                    'name' => 'talla',
                     'position' => 1,
                     'visible' => true,
                     'variation' => true,
-                    'options' => Constantes::$COLORES
+                    'options' => Constantes::$TALLAS
                 ]
             ]
         ];
@@ -278,7 +294,7 @@ class ProductoServicio
 
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
-        GetConsultaSagJson("SELECT concat(a.ss_detalle_artic2,' ',sc_referencia) as sc_detalle_articulo,
+        GetConsultaSagJson("SELECT top 1 concat(a.ss_detalle_artic2,' ',sc_referencia) as sc_detalle_articulo,
                             a.k_sc_codigo_articulo as codigo_articulo_principal ,                            
                             a.nd_valor_venta4 as precioDetallista,sv_obs_articulo, a.sc_referencia AS ss_descripcion_referente,sv_obs_articulo,
                             cb.ss_codigo_barras AS k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo,ka_ni_grupo,  t.ss_talla as talla,  

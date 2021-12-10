@@ -85,8 +85,8 @@ class OrdenServicio
             $movimientoDetalle->setAttribute("movimientoId", 1);
             $movimientoDetalle->setAttribute("sc_cual_precio", 1);
             $movimientoDetalle->setAttribute("codigoArticulo",$purchase_note);
-            $movimientoDetalle->setAttribute("color", $detalleProducto->meta_data[1]['value']);
-            $movimientoDetalle->setAttribute("talla", $detalleProducto->meta_data[0]['display_value']);
+            $movimientoDetalle->setAttribute("color", $detalleProducto->meta_data[0]['value']);
+            $movimientoDetalle->setAttribute("talla", $detalleProducto->meta_data[1]['display_value']);
             $movimientoDetalle->setAttribute("cantidad", $detalleProducto->quantity);
             $movimientoDetalle->setAttribute("valorUnitario",$detalleProducto->price);
             $movimientoDetalle->setAttribute("iva", Constantes::$IVA);

@@ -46,6 +46,8 @@ class ClienteServicio
 
     public function CrearXMLClienteSag($clienteWoo){
 
+
+
         $doc = new  DOMDocument ();
 
         $doc -> formatOutput = true ;
@@ -63,8 +65,11 @@ class ClienteServicio
 
         $codigoDaneCiudad = $doc -> createElement ( "codigoDaneCiudad" );
         $codigoDaneCiudad = $cliente -> appendChild ( $codigoDaneCiudad );
-       // $textcodigoDaneCiudad = $doc -> createTextNode ( "05001" );
-        $textcodigoDaneCiudad = $doc -> createTextNode ($clienteWoo->billing->city);
+        if($clienteWoo->billing->postcode ==''){
+            $textcodigoDaneCiudad = $doc -> createTextNode ($clienteWoo->billing->city);
+        }else{
+            $textcodigoDaneCiudad = $doc -> createTextNode ($clienteWoo->billing->postcode);
+        }
         $codigoDaneCiudad -> appendChild ( $textcodigoDaneCiudad );
 
         $naturaleza = $doc -> createElement ( "naturaleza" );
@@ -194,7 +199,7 @@ class ClienteServicio
         //siempre es 1 segun las reglas de negocio de la ramada precio 1 string
         $precioVenta = $doc -> createElement ( "precioVenta" );
         $precioVenta = $cliente -> appendChild ( $precioVenta );
-        $textprecioVenta = $doc -> createTextNode ( "4" );
+        $textprecioVenta = $doc -> createTextNode ( "0" );
         $precioVenta -> appendChild ( $textprecioVenta );
 
         //siempre es 999999999 numerico

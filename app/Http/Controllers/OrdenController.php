@@ -51,11 +51,15 @@ class OrdenController extends Controller
         foreach ($ordenesWoo as $ordenWoo) {
             $ordenWoo = (object)$ordenWoo;
             $fechas = explode("T", $ordenWoo->date_created);
-            $clienteWoo = (object)$this->clienteController->CrearClienteSagDesdeWoo($ordenWoo->customer_id);
-            IF ($this->ordenServicio->ValidarOrdenRepetidaSag($ordenWoo->id, $fechas[0]) == null) {
-                $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo, $clienteWoo);
-                $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
+            $clienteWoo =null;
+            if(isset($ordenWoo->customer_id) && $ordenWoo->customer_id != 0){
+                $clienteWoo = (object)$this->clienteController->CrearClienteSagDesdeWoo($ordenWoo);
+                IF ($this->ordenServicio->ValidarOrdenRepetidaSag($ordenWoo->id, $fechas[0]) == null) {
+                    $xmlOrdenSag = $this->ordenServicio->CrearXMLOrdenSag($ordenWoo, $clienteWoo);
+                    $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
+                }
             }
+
         }
         Log::info('Se han creado las ordenes con exito',array('Ordenes Creadas' => $resultados));
         return "proceso terminado";

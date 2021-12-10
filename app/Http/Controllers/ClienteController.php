@@ -40,9 +40,9 @@ class ClienteController extends COntroller
         dd($result);
     }
 
-    public function CrearClienteSagDesdeWoo($idClienteWoo){
-        $clienteWoo = (object)  $this->clienteServicio->ConsultarClienteWoo($idClienteWoo);
-        $clienteWoo->billing = (object)  $clienteWoo->billing;
+    public function CrearClienteSagDesdeWoo($ordenWoo){
+        $clienteWoo = (object)  $this->clienteServicio->ConsultarClienteWoo($ordenWoo->customer_id);
+        $clienteWoo->billing = (object)  $ordenWoo->billing;
         $xmlClienteSag = $this->clienteServicio->CrearXMLClienteSag($clienteWoo);
         return $this->clienteServicio->GuardarClientesSAG($xmlClienteSag);
     }

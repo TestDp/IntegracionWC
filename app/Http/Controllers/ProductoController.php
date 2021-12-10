@@ -48,9 +48,11 @@ class ProductoController extends Controller
 
     public  function  ActualizarInventarioProductosWoo(){
         date_default_timezone_set('America/Bogota');
+        Log::info('Proceso Iniciado');
         $Periodo = date('Ym');
         $result =  $this->productoServicio->ActualizarInventarioProductosWoo($Periodo);
         Log::info('Actualizar Inventario de  Productos Woocommerce',array('Inventario actualizado de los siguientes productos' => $result));
+        Log::info('Proceso terminado');
         return "proceso terminado";
     }
 
