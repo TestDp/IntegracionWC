@@ -48,7 +48,7 @@ class OrdenController extends Controller
     public function CrearOrdenesSagDesdeWoo(){
         date_default_timezone_set('America/Bogota');
         $fechaActual = date('Y-m-d\TH:i:s');
-        $fechaConsulta = date('Y-m-d\TH:i:s',strtotime($fechaActual . "- 10 days"));
+        $fechaConsulta = date('Y-m-d\TH:i:s',strtotime($fechaActual . "- 1 days"));
         $ordenesWoo =  $this->ordenServicio->ConsultarOrdenesWooByDate($fechaConsulta);
         $resultados = array();
         foreach ($ordenesWoo as $ordenWoo) {
@@ -60,7 +60,7 @@ class OrdenController extends Controller
                 $resultados[] = $this->ordenServicio->GuardarOrdenSAG($xmlOrdenSag);
             }
         }
-        Log::info('Se han creado las ordenes con exito',array('Ordenes Creadas' => $ordenesWoo));
+        Log::info('Se han creado las ordenes con exito',array('Ordenes Creadas' => $resultados));
         return "proceso terminado";
     }
 }

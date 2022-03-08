@@ -65,7 +65,8 @@ class ProductoServicio
             if(is_null($productoWoo)){
                 $this->CrearProductoWoo($productoSag,$tipoPrecio);
             }else{
-                $nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
+                //NO BORRAR
+                /*$nomreImagen = $this->ObtenerNombreImagen($productoSag->ss_direccion_logo);
                 $formParams = ['name' => $productoSag->sc_detalle_articulo,
                     'description' => $productoSag->sv_obs_articulo,
                     'images' => [
@@ -77,7 +78,7 @@ class ProductoServicio
                         ]
                     ]
                 ];
-                $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$productoWoo['id'],$formParams);
+                $this->clienteServicioWoo->Put(Constantes::$URLBASE.Constantes::$ENDPOINTPRODUCTOS.'/'.$productoWoo['id'],$formParams);*/
             }
         }
 
@@ -100,7 +101,7 @@ class ProductoServicio
                 $listaVariacionesProductosWoo->push($variacionProducto);
             }
             else {
-                $productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
+                //$productoWooVariacion = $listaVariacionesProductosWoo->firstWhere(Constantes::$SKU, '=', $productovariableSag->k_sc_codigo_articulo);
                 if (is_null($productoWooVariacion)) {
                     $variacionProducto = $this->CrearProductoVariacionWoo($productovariableSag, $productoWoo['id'],$tipoPrecio);
                     $listaVariacionesProductosWoo->push($variacionProducto);
@@ -153,10 +154,11 @@ class ProductoServicio
     public function ObtenerArrayProducto($productoSag,$idProductoWoo,$tipoPrecio)
     {
         $formParams = ['id'=>$idProductoWoo,
-            'stock_quantity' => intval($productoSag->n_saldo_actual),
-            'regular_price' =>(Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
-                              (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                                  $productoSag->precioDistribuidor];
+                    'stock_quantity' => intval($productoSag->n_saldo_actual),
+                    'regular_price' =>(Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
+                                        ((Constantes::$PRECIOMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
+                                            ((Constantes::$NOMBREHOSTDISTRIBUIDORES == $tipoPrecio)?
+                                                $productoSag->precioDistribuidor:$productoSag->precioSitio4))];
         return $formParams;
     }
 
@@ -222,8 +224,9 @@ class ProductoServicio
             'name' => $productoSag->sc_detalle_articulo,
             'type' => 'simple',
             'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
-                               (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                                $productoSag->precioDistribuidor,
+                                ((Constantes::$PRECIOMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
+                                    ((Constantes::$NOMBREHOSTDISTRIBUIDORES == $tipoPrecio)?
+                                        $productoSag->precioDistribuidor:$productoSag->precioSitio4)),
             'description' => $productoSag->sv_obs_articulo,
             'short_description' => $productoSag->sv_obs_articulo,
             "sku" => $productoSag->k_sc_codigo_articulo,
@@ -250,8 +253,9 @@ class ProductoServicio
 
         $data = [
             'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
-                (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                    $productoSag->precioDistribuidor,
+                                ((Constantes::$PRECIOMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
+                                    ((Constantes::$NOMBREHOSTDISTRIBUIDORES == $tipoPrecio)?
+                                        $productoSag->precioDistribuidor:$productoSag->precioSitio4)),
             "sku" => $productoSag->k_sc_codigo_articulo,
             'manage_stock' => true,
             'attributes' => [
@@ -272,8 +276,9 @@ class ProductoServicio
             'name' => $productoSag->ss_descripcion_referente,
             'type' => 'variable',
             'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
-                (Constantes::$NOMBREHOSTMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                    $productoSag->precioDistribuidor,
+                                ((Constantes::$PRECIOMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
+                                ((Constantes::$NOMBREHOSTDISTRIBUIDORES == $tipoPrecio)?
+                                    $productoSag->precioDistribuidor:$productoSag->precioSitio4)),
             'description' => $productoSag->sv_obs_articulo,
             'short_description' => $productoSag->sv_obs_articulo,
             "sku" => '',
@@ -310,11 +315,11 @@ class ProductoServicio
     public function ConsultarProductosSAG( $fecha ){
         $result = $this->clienteServicioSag ->
         GetConsultaSagJson("select  sc_detalle_articulo,  nd_precio6 as precioDistribuidor,
-                                      n_valor_venta_especial as precioMayorista, nd_precio8 as precioDetallista,sv_obs_articulo, ss_descripcion_referente,
+                                      n_valor_venta_especial as precioMayorista, nd_precio8 as precioDetallista,n_valor_venta_promocion as precioSitio4,sv_obs_articulo, ss_descripcion_referente,
                             substring(sc_detalle_articulo, (len(sc_detalle_articulo)-1), len(sc_detalle_articulo)) as Talla, sv_obs_articulo,
                             k_sc_codigo_articulo,ka_ni_grupo,ss_direccion_logo , ka_ni_grupo
                             from articulos WITH(NOLOCK)
-                            where sc_tienda_virtual = 'S' and dd_fecha_ult_modificacion > "."'". $fecha."'");
+                            where sc_tienda_virtual = 'S' and sc_detalle_articulo not like '%GUANTES%' and dd_fecha_ult_modificacion > "."'". $fecha."'");
         return $result;
     }
 
@@ -327,7 +332,7 @@ class ProductoServicio
                                      on s.ka_nl_bodega = b.ka_nl_bodega
                                      inner join articulos as a
                                      on s.ka_nl_articulo = a.ka_nl_articulo
-                                     where b.ka_nl_bodega = 1 and a.sc_tienda_virtual = 'S' and k_sc_periodo =".$periodo);
+                                     where b.ka_nl_bodega = 34 and a.sc_tienda_virtual = 'S' and k_sc_periodo =".$periodo);
         return $result;
     }
 

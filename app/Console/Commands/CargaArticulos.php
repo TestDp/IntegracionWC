@@ -68,6 +68,13 @@ class CargaArticulos extends Command
                    $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
                    $this->pcontroller->ActualizarInventarioProductosWoo(Constantes::$PRECIODISTRIBUIDORES);
                break;
+           case Constantes::$NOMBREHOSTSITIO4:
+               $baseUrl = env('HOST_SITIO4');
+               $claveClienteWoo = env('CLAVE_CLIENTE_SITIO4');
+               $claveSecretaWoo = env('CLAVE_SECRETA_SITIO4');
+               $this->pcontroller->InicializarServiceClientWoo($baseUrl,$claveClienteWoo,$claveSecretaWoo);
+               $this->pcontroller->ActualizarInventarioProductosWoo(Constantes::$PRECIODISTRIBUIDORES);
+               break;
            default:
                $this->info('comando no valido');
        }

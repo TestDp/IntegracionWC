@@ -79,7 +79,7 @@ class ClienteServicio
 
         $documento = $doc -> createElement ( "documento" );
         $documento = $cliente -> appendChild ( $documento );
-        $textdocumento = $doc -> createTextNode ( $clienteWoo->billing->phone);//despues de que se pida la cc de la woo se cambia por company
+        $textdocumento = $doc -> createTextNode ( $clienteWoo->billing->company);//despues de que se pida la cc de la woo se cambia por company
         $textdocumento = $documento -> appendChild ( $textdocumento );
 
         $nombre = $doc -> createElement ( "nombre" );
