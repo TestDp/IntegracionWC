@@ -157,7 +157,7 @@ class ProductoServicio
                     'stock_quantity' => intval($productoSag->n_saldo_actual),
                     'regular_price' =>(Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
                                         ((Constantes::$PRECIOMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                                            ((Constantes::$NOMBREHOSTDISTRIBUIDORES == $tipoPrecio)?
+                                            ((Constantes::$PRECIODISTRIBUIDORES == $tipoPrecio)?
                                                 $productoSag->precioDistribuidor:$productoSag->precioSitio4))];
         return $formParams;
     }
@@ -225,7 +225,7 @@ class ProductoServicio
             'type' => 'simple',
             'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
                                 ((Constantes::$PRECIOMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                                    ((Constantes::$NOMBREHOSTDISTRIBUIDORES == $tipoPrecio)?
+                                    ((Constantes::$PRECIODISTRIBUIDORES == $tipoPrecio)?
                                         $productoSag->precioDistribuidor:$productoSag->precioSitio4)),
             'description' => $productoSag->sv_obs_articulo,
             'short_description' => $productoSag->sv_obs_articulo,
@@ -254,7 +254,7 @@ class ProductoServicio
         $data = [
             'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
                                 ((Constantes::$PRECIOMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                                    ((Constantes::$NOMBREHOSTDISTRIBUIDORES == $tipoPrecio)?
+                                    ((Constantes::$PRECIODISTRIBUIDORES == $tipoPrecio)?
                                         $productoSag->precioDistribuidor:$productoSag->precioSitio4)),
             "sku" => $productoSag->k_sc_codigo_articulo,
             'manage_stock' => true,
@@ -277,7 +277,7 @@ class ProductoServicio
             'type' => 'variable',
             'regular_price' => (Constantes::$PRECIODETALLISTAS == $tipoPrecio)? $productoSag->precioDetallista:
                                 ((Constantes::$PRECIOMAYORISTAS == $tipoPrecio)?$productoSag->precioMayorista:
-                                ((Constantes::$NOMBREHOSTDISTRIBUIDORES == $tipoPrecio)?
+                                ((Constantes::$PRECIODISTRIBUIDORES == $tipoPrecio)?
                                     $productoSag->precioDistribuidor:$productoSag->precioSitio4)),
             'description' => $productoSag->sv_obs_articulo,
             'short_description' => $productoSag->sv_obs_articulo,
@@ -326,7 +326,7 @@ class ProductoServicio
     public function ConsultarInventarioProductosSAG($periodo){
         $result = $this->clienteServicioSag ->
         GetConsultaSagJson("select a.k_sc_codigo_articulo,   a.nd_precio6 as precioDistribuidor, a.n_valor_venta_especial as precioMayorista, a.nd_precio8 as precioDetallista,
-                            s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
+                                      n_valor_venta_promocion as precioSitio4,s.n_saldo_actual, a.ka_ni_grupo, ss_descripcion_referente
                                      from saldos_articulos as s WITH(NOLOCK)
                                      inner join bodegas as b
                                      on s.ka_nl_bodega = b.ka_nl_bodega
